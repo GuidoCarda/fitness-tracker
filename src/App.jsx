@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import "./App.css";
+import exercisesList from "./exercices";
 
 function App() {
   const [series, setSeries] = useState([]);
@@ -30,7 +31,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-neutral-900 text-white pb-20">
-      <div className=" rounded-md flex flex-col gap-4 px-4 py-8">
+      <div className=" rounded-md flex flex-col gap-4 px-4 py-8  max-w-5xl mx-auto">
         <h1 className="text-4xl font-bold mb-6">Rutina</h1>
 
         {/* <div className="rounded-md p-4 bg-neutral-800">
@@ -113,7 +114,7 @@ function App() {
                   <h2 className="text-2xl font-bold">Push ups</h2>
 
                   <button
-                    onClick={handleAddSerie}
+                    onClick={() => handleAddSerie(exercise.id)}
                     className="ml-auto py-2 px-4 bg-emerald-700 rounded-md font-bold"
                   >
                     add series
@@ -121,7 +122,7 @@ function App() {
                 </div>
 
                 <ul className="flex flex-col gap-4">
-                  {series.length === 0 ? (
+                  {series.lenght === 0 ? (
                     <h2 className="text-xl font-bold text-neutral-400">
                       Aun no hay series cargadas
                     </h2>
@@ -151,6 +152,27 @@ function App() {
                   )}
                 </ul>
               </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-4">
+          {exercisesList.map(({ name, type, bodyparts }) => (
+            <div className="flex flex-col gap-4  border-2 border-neutral-700 rounded-md px-4 py-4">
+              {" "}
+              <div className="flex items-center justify-between">
+                <span className="capitalize text-2xl font-bold">{name}</span>
+                <span className="uppercase tracking-widest text-neutral-400">
+                  {type}
+                </span>
+              </div>
+              <ul className="flex gap-2">
+                {bodyparts.map((bp) => (
+                  <li className="px-4 py-1 bg-black/70 hover:bg-emerald-500/20 border-2 border-white/10 font-bold rounded-md">
+                    {bp}
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
