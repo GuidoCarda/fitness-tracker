@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
+import { WorkoutsContext } from "../context/WorkoutsContext";
 
 const Home = () => {
   const [newWorkout, setNewWorkout] = useState(false);
-  const [workouts, setWorkouts] = useState([]);
-
-  console.log(workouts);
 
   const toggleNewWorkout = () => {
     setNewWorkout(!newWorkout);
   };
+
+  const { workouts, addWorkout, deleteWorkout } = useContext(WorkoutsContext);
 
   return (
     <div>
@@ -25,7 +25,7 @@ const Home = () => {
 
       {newWorkout && (
         <WorkoutInput
-          setWorkouts={setWorkouts}
+          addWorkout={addWorkout}
           workouts={workouts}
           handleToggle={toggleNewWorkout}
         />
@@ -36,9 +36,15 @@ const Home = () => {
           workouts.map((workout, idx) => (
             <li
               key={idx}
-              className="border-2 border-neutral-400 h-24 p-4 rounded-lg"
+              className="border-2 border-neutral-400 h-24 p-4 rounded-lg flex items-center justify-between"
             >
               <Link to={`/workouts/${idx}`}>{workout.name}</Link>
+              <button
+                onClick={() => deleteWorkout(workout.id)}
+                className="h-10 w-10 bg-neutral-500 rounded-md grid place-content-center"
+              >
+                x
+              </button>
             </li>
           ))
         ) : (
@@ -51,13 +57,13 @@ const Home = () => {
 
 export default Home;
 
-function WorkoutInput({ setWorkouts, workouts, handleToggle }) {
+function WorkoutInput({ addWorkout, workouts, handleToggle }) {
   const [name, setName] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name) return;
-    setWorkouts([...workouts, { name }]);
+    addWorkout(name);
     handleToggle();
 
     setName("");
