@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useLoaderData } from "react-router-dom";
+import { WorkoutsContext } from "../context/WorkoutsContext";
 import useDebouncedValue from "../hooks/useDebouncedValue";
 
 function simulatedFetch(query) {
@@ -40,7 +41,13 @@ const Workout = () => {
   const [queryResults, setQueryResults] = useState([]);
   const debouncedQuery = useDebouncedValue(query);
 
+  const { workouts, addExercise } = useContext(WorkoutsContext);
+
   console.log(debouncedQuery);
+
+  const currentWorkout = workouts.find((w) => w.id == loaderData);
+
+  console.log(currentWorkout);
 
   const fetchData = async () => {
     const data = await simulatedFetch(debouncedQuery);
@@ -76,38 +83,39 @@ const Workout = () => {
             onChange={(e) => setQuery(e.currentTarget.value.toLowerCase())}
           />
         </div>
-
-        <button
-          disabled={query.length === 0}
-          className="mt-4 ml-auto bg-cyan-700 text-white px-4 py-1 rounded-lg disabled:bg-neutral-500"
-        >
-          Agregar
-        </button>
+        <ul className="mt-10 flex flex-col gap-2">
+          {queryResults.length !== 0 && query ? (
+            queryResults.map((result) => (
+              <li>
+                <button onClick={() => addExercise(currentWorkout.id, result)}>
+                  {result}
+                </button>
+              </li>
+            ))
+          ) : !debouncedQuery ? null : (
+            <li>No se encontraron coincidencias</li>
+          )}
+        </ul>
       </div>
-
-      <ul className="mt-10">
-        {queryResults.length !== 0 && query ? (
-          queryResults.map((result) => <li>{result}</li>)
-        ) : !debouncedQuery ? null : (
-          <li>No se encontraron coincidencias</li>
-        )}
-      </ul>
+      <div>{currentWorkout?.name}</div>
     </div>
   );
 };
 
-async function getWorkouts() {
+async function getWorkout(id) {
   const isOk = true;
+
+  console.log(id);
   return new Promise((resolve, reject) => {
     if (isOk) {
-      resolve({ name: "test", workout: "test" });
+      resolve(id);
     }
     reject("error");
   });
 }
 
-export function loader() {
-  return getWorkouts();
+export function loader({ params }) {
+  return getWorkout(params.id);
 }
 
 export default Workout;
