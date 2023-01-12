@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const [newWorkout, setNewWorkout] = useState(false);
@@ -37,7 +38,7 @@ const Home = () => {
               key={idx}
               className="border-2 border-neutral-400 h-24 p-4 rounded-lg"
             >
-              {workout.name}
+              <Link to={`/workouts/${idx}`}>{workout.name}</Link>
             </li>
           ))
         ) : (
@@ -82,7 +83,10 @@ function WorkoutInput({ setWorkouts, workouts, handleToggle }) {
           />
         </div>
 
-        <button className="mt-4 ml-auto bg-cyan-700 text-white px-4 py-1 rounded-lg">
+        <button
+          disabled={name.length === 0}
+          className="mt-4 ml-auto bg-cyan-700 text-white px-4 py-1 rounded-lg disabled:bg-neutral-500"
+        >
           Crear
         </button>
       </form>
