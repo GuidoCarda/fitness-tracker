@@ -38,7 +38,7 @@ const Home = () => {
               key={idx}
               className="border-2 border-neutral-400 h-24 p-4 rounded-lg flex items-center justify-between"
             >
-              <Link to={`/workouts/${idx}`}>{workout.name}</Link>
+              <Link to={`/workouts/${workout?.id}`}>{workout.name}</Link>
               <button
                 onClick={() => deleteWorkout(workout.id)}
                 className="h-10 w-10 bg-neutral-500 rounded-md grid place-content-center"

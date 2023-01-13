@@ -10,8 +10,12 @@ import Workout from "./pages/Workout";
 import Home from "./pages/Home";
 import { loader as workoutLoader } from "./pages/Workout";
 import ErrorPage from "./pages/Error";
+import { WorkoutsContext } from "./context/WorkoutsContext";
+import { useContext } from "react";
 
 function App() {
+  const { workouts } = useContext(WorkoutsContext);
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<RootLayout />} errorElement={<ErrorPage />}>
