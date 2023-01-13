@@ -43,11 +43,11 @@ const Workout = () => {
 
   const { workouts, addExercise } = useContext(WorkoutsContext);
 
-  console.log(debouncedQuery);
+  // console.log(debouncedQuery);
 
   const currentWorkout = workouts.find((w) => w.id == loaderData);
 
-  console.log(currentWorkout);
+  // console.log(currentWorkout);
 
   const fetchData = async () => {
     const data = await simulatedFetch(debouncedQuery);

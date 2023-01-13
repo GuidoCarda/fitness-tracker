@@ -16,17 +16,26 @@ export const WorkoutsProvider = ({ children }) => {
       id: randomId(),
       name: newWorkout,
       date: new Date(),
+      exercises: [],
     };
     setWorkouts([...workouts, workout]);
   };
 
   const addExercise = (workoutId, exercise) => {
-    // const workout = workouts.find(w=>w.id === workoutId);
-    // workout[exercise] = {}
+    //Check if an exercise already exists in the workout
+
+    const newExercise = {
+      nombre: exercise,
+      sets: [],
+    };
 
     const editedWorkout = workouts.map((w) => {
-      return w.id === workoutId ? { ...w, exercise } : w;
+      return w.id === workoutId
+        ? { ...w, exercises: [...w.exercises, newExercise] }
+        : w;
     });
+
+    setWorkouts(editedWorkout);
     console.log(editedWorkout);
   };
 
