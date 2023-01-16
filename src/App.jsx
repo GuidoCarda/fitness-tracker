@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import RootLayout from "./pages/RootLayout";
 import Workout from "./pages/Workout";
-import Home from "./pages/Home";
+import Home, { loader as workoutsLoader } from "./pages/Home";
 import { loader as workoutLoader } from "./pages/Workout";
 import ErrorPage from "./pages/Error";
 import { WorkoutsContext } from "./context/WorkoutsContext";
@@ -19,7 +19,7 @@ function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<RootLayout />} errorElement={<ErrorPage />}>
-        <Route index element={<Home />} />
+        <Route index element={<Home />} loader={workoutsLoader} />
         <Route
           path="workouts/:id"
           element={<Workout />}

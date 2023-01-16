@@ -1,6 +1,8 @@
 import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useLoaderData } from "react-router-dom";
 import { WorkoutsContext } from "../context/WorkoutsContext";
+import { supabase } from "../supabaseClient";
 
 const Home = () => {
   const [newWorkout, setNewWorkout] = useState(false);
@@ -9,7 +11,17 @@ const Home = () => {
     setNewWorkout(!newWorkout);
   };
 
-  const { workouts, addWorkout, deleteWorkout } = useContext(WorkoutsContext);
+  const { workouts, createWorkout, deleteWorkout, getWorkouts } =
+    useContext(WorkoutsContext);
+
+  const loaderData = useLoaderData();
+
+  // useEffect(() => {
+  //   if (!loaderData) return;
+  //   getWorkouts(loaderData);
+  // }, [loaderData]);
+
+  console.log(loaderData);
 
   return (
     <div>
@@ -25,15 +37,14 @@ const Home = () => {
 
       {newWorkout && (
         <WorkoutInput
-          addWorkout={addWorkout}
-          workouts={workouts}
+          createWorkout={createWorkout}
           handleToggle={toggleNewWorkout}
         />
       )}
 
       <ul className="flex flex-col gap-4 mt-10">
-        {workouts.length !== 0 ? (
-          workouts.map((workout, idx) => (
+        {loaderData.length !== 0 ? (
+          loaderData.map((workout, idx) => (
             <li
               key={idx}
               className="border-2 border-neutral-400 h-24 p-4 rounded-lg flex items-center justify-between"
@@ -57,13 +68,28 @@ const Home = () => {
 
 export default Home;
 
-function WorkoutInput({ addWorkout, workouts, handleToggle }) {
+export async function loader() {
+  try {
+    const { error, data } = await supabase
+      .from("workouts")
+      .select("*")
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function WorkoutInput({ createWorkout, handleToggle }) {
   const [name, setName] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name) return;
-    addWorkout(name);
+    createWorkout(name);
     handleToggle();
 
     setName("");

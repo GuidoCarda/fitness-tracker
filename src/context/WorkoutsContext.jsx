@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import { supabase } from "../supabaseClient";
 
 export const WorkoutsContext = createContext();
 
@@ -9,6 +10,27 @@ export const WorkoutsProvider = ({ children }) => {
 
   const randomId = () => {
     return Math.floor(Math.random() * 10000000);
+  };
+
+  const createWorkout = async (workoutName) => {
+    try {
+      const { error, data } = await supabase
+        .from("workouts")
+        .insert({
+          name: workoutName,
+        })
+        .select("*");
+
+      if (error) throw error;
+
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getWorkouts = (data) => {
+    setWorkouts([...data]);
   };
 
   const addWorkout = (newWorkout) => {
@@ -25,8 +47,9 @@ export const WorkoutsProvider = ({ children }) => {
     //Check if an exercise already exists in the workout
 
     const newExercise = {
+      id: 1,
       nombre: exercise,
-      sets: [],
+      body_part: "test",
     };
 
     const editedWorkout = workouts.map((w) => {
@@ -45,7 +68,14 @@ export const WorkoutsProvider = ({ children }) => {
 
   return (
     <WorkoutsContext.Provider
-      value={{ workouts, addWorkout, deleteWorkout, addExercise }}
+      value={{
+        workouts,
+        addWorkout,
+        deleteWorkout,
+        addExercise,
+        createWorkout,
+        getWorkouts,
+      }}
     >
       {children}
     </WorkoutsContext.Provider>
