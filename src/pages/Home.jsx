@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useEffect } from "react";
-import { Link, useLoaderData } from "react-router-dom";
+import { Link, redirect, useLoaderData, useNavigate } from "react-router-dom";
 import { WorkoutsContext } from "../context/WorkoutsContext";
 import { supabase } from "../supabaseClient";
 
@@ -15,11 +15,6 @@ const Home = () => {
     useContext(WorkoutsContext);
 
   const loaderData = useLoaderData();
-
-  // useEffect(() => {
-  //   if (!loaderData) return;
-  //   getWorkouts(loaderData);
-  // }, [loaderData]);
 
   console.log(loaderData);
 
@@ -86,13 +81,16 @@ export async function loader() {
 function WorkoutInput({ createWorkout, handleToggle }) {
   const [name, setName] = useState("");
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name) return;
-    createWorkout(name);
+    const [data] = await createWorkout(name);
     handleToggle();
-
     setName("");
+
+    navigate(`/workouts/${data.id}`);
   };
 
   return (

@@ -23,7 +23,7 @@ export const WorkoutsProvider = ({ children }) => {
 
       if (error) throw error;
 
-      console.log(data);
+      return data;
     } catch (error) {
       console.log(error);
     }
@@ -62,8 +62,14 @@ export const WorkoutsProvider = ({ children }) => {
     console.log(editedWorkout);
   };
 
-  const deleteWorkout = (id) => {
-    setWorkouts(workouts.filter((workout) => workout.id !== id));
+  // const deleteWorkout = (id) => {
+  //   setWorkouts(workouts.filter((workout) => workout.id !== id));
+  // };
+
+  const deleteWorkout = async (id) => {
+    console.log(id);
+    const res = await supabase.from("workouts").delete().eq("id", id);
+    console.log(res);
   };
 
   return (
