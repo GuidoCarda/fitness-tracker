@@ -105,7 +105,7 @@ const Workout = () => {
 async function getWorkout(id) {
   const isOk = true;
 
-  console.log(id);
+  // console.log(id);
   return new Promise((resolve, reject) => {
     if (isOk) {
       resolve(id);

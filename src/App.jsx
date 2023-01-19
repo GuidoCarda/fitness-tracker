@@ -9,7 +9,8 @@ import RootLayout from "./pages/RootLayout";
 import Workout from "./pages/Workout";
 import Home, {
   loader as workoutsLoader,
-  action as workoutsAction,
+  createAction as createWorkout,
+  deleteAction as deleteWorkout,
 } from "./pages/Home";
 import { loader as workoutLoader } from "./pages/Workout";
 import ErrorPage from "./pages/Error";
@@ -26,13 +27,14 @@ function App() {
           path="/"
           element={<Home />}
           loader={workoutsLoader}
-          action={workoutsAction}
+          action={createWorkout}
         />
         <Route
           path="workouts/:id"
           element={<Workout />}
           loader={workoutLoader}
         />
+        <Route path="workouts/:id/delete" action={deleteWorkout} />
       </Route>
     )
   );

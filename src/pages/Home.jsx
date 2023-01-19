@@ -3,8 +3,10 @@ import {
   Form,
   Link,
   redirect,
+  useFetcher,
   useLoaderData,
   useNavigate,
+  useSubmit,
 } from "react-router-dom";
 import { WorkoutsContext } from "../context/WorkoutsContext";
 import { supabase } from "../supabaseClient";
@@ -20,6 +22,16 @@ const Home = () => {
     useContext(WorkoutsContext);
 
   const loaderData = useLoaderData();
+  const fetcher = useFetcher();
+  let submit = useSubmit();
+
+  const deleteWorkoutTest = () => {
+    console.log(data);
+    submit(data, {
+      method: "delete",
+      action: `/workouts/${data.id}/delete`,
+    });
+  };
 
   return (
     <div>
@@ -40,26 +52,39 @@ const Home = () => {
         />
       )}
 
-      <ul className="flex flex-col gap-4 mt-10">
-        {loaderData.length !== 0 ? (
-          loaderData.map((workout, idx) => (
-            <li
-              key={idx}
-              className="border-2 border-neutral-400 h-24 p-4 rounded-lg flex items-center justify-between"
-            >
-              <Link to={`/workouts/${workout?.id}`}>{workout.name}</Link>
-              <button
-                onClick={() => deleteWorkout(workout.id)}
-                className="h-10 w-10 bg-neutral-500 rounded-md grid place-content-center"
+      <section>
+        <div className="flex mt-10">
+          <button className="ml-auto bg-red-300/70 border-2 border-red-300 text-red-800 px-4 py-1 rounded-lg font-bold">
+            Eliminar todos
+          </button>
+        </div>
+        <ul className="flex flex-col gap-4 mt-4">
+          {loaderData.length !== 0 ? (
+            loaderData.map((workout, idx) => (
+              <li
+                key={idx}
+                className="border-2 border-neutral-400 h-24 p-4 rounded-lg flex items-center justify-between"
               >
-                x
-              </button>
-            </li>
-          ))
-        ) : (
-          <li>Aun no hay entrenamientos disponibles</li>
-        )}
-      </ul>
+                <Link to={`/workouts/${workout?.id}`}>{workout.name}</Link>
+                <fetcher.Form
+                  method="delete"
+                  action={`/workouts/${workout?.id}/delete`}
+                >
+                  <button
+                    type="submit"
+                    onClick={() => deleteWorkoutTest(workout.id)}
+                    className="h-10 w-10 bg-neutral-500 rounded-md grid place-content-center"
+                  >
+                    x
+                  </button>
+                </fetcher.Form>
+              </li>
+            ))
+          ) : (
+            <li>Aun no hay entrenamientos disponibles</li>
+          )}
+        </ul>
+      </section>
     </div>
   );
 };
@@ -81,7 +106,7 @@ export async function loader() {
   }
 }
 
-export async function action({ request }) {
+export async function createAction({ request }) {
   let formValue = Object.fromEntries(await request.formData());
 
   try {
@@ -102,10 +127,25 @@ export async function action({ request }) {
   }
 }
 
+export async function deleteAction({ params }) {
+  const workoutId = params.id;
+
+  try {
+    const { error, data } = await supabase
+      .from("workouts")
+      .delete()
+      .eq("id", workoutId);
+
+    if (error) throw error;
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 function WorkoutInput() {
   const [name, setName] = useState("");
-
-  const navigate = useNavigate();
 
   return (
     <>
