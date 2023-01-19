@@ -1,6 +1,11 @@
 import React, { useState, useContext } from "react";
-import { useEffect } from "react";
-import { Link, redirect, useLoaderData, useNavigate } from "react-router-dom";
+import {
+  Form,
+  Link,
+  redirect,
+  useLoaderData,
+  useNavigate,
+} from "react-router-dom";
 import { WorkoutsContext } from "../context/WorkoutsContext";
 import { supabase } from "../supabaseClient";
 
@@ -15,8 +20,6 @@ const Home = () => {
     useContext(WorkoutsContext);
 
   const loaderData = useLoaderData();
-
-  console.log(loaderData);
 
   return (
     <div>
@@ -68,7 +71,7 @@ export async function loader() {
     const { error, data } = await supabase
       .from("workouts")
       .select("*")
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: false });
 
     if (error) throw error;
 
@@ -78,25 +81,37 @@ export async function loader() {
   }
 }
 
-function WorkoutInput({ createWorkout, handleToggle }) {
+export async function action({ request }) {
+  let formValue = Object.fromEntries(await request.formData());
+
+  try {
+    const { error, data } = await supabase
+      .from("workouts")
+      .insert({
+        name: formValue["workout-name"],
+      })
+      .select("*");
+
+    if (error) throw error;
+
+    const [workout] = data;
+
+    return redirect(`/workouts/${workout.id}`);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function WorkoutInput() {
   const [name, setName] = useState("");
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!name) return;
-    const [data] = await createWorkout(name);
-    handleToggle();
-    setName("");
-
-    navigate(`/workouts/${data.id}`);
-  };
-
   return (
     <>
-      <form
-        onSubmit={handleSubmit}
+      <Form
+        method="post"
+        action="/"
         className="border-2 px-6 py-8 flex flex-col mt-6 rounded-md bg-white"
       >
         <h2 className="text-2xl font-semibold mb-4">Nuevo Entrenamiento</h2>
@@ -109,6 +124,7 @@ function WorkoutInput({ createWorkout, handleToggle }) {
             className="border-2 border-neutral-600 rounded-md h-10 p-2"
             type="text"
             value={name}
+            name="workout-name"
             onChange={(e) => setName(e.currentTarget.value)}
           />
         </div>
@@ -119,7 +135,7 @@ function WorkoutInput({ createWorkout, handleToggle }) {
         >
           Crear
         </button>
-      </form>
+      </Form>
     </>
   );
 }
