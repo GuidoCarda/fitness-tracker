@@ -46,20 +46,22 @@ export const WorkoutsProvider = ({ children }) => {
   const addExercise = (workoutId, exercise) => {
     //Check if an exercise already exists in the workout
 
-    const newExercise = {
-      id: 1,
-      nombre: exercise,
-      body_part: "test",
-    };
+    console.log(workoutId, exercise);
 
-    const editedWorkout = workouts.map((w) => {
-      return w.id === workoutId
-        ? { ...w, exercises: [...w.exercises, newExercise] }
-        : w;
-    });
+    // const newExercise = {
+    //   id: 1,
+    //   nombre: exercise,
+    //   body_part: "test",
+    // };
 
-    setWorkouts(editedWorkout);
-    console.log(editedWorkout);
+    // const editedWorkout = workouts.map((w) => {
+    //   return w.id === workoutId
+    //     ? { ...w, exercises: [...w.exercises, newExercise] }
+    //     : w;
+    // });
+
+    // setWorkouts(editedWorkout);
+    // console.log(editedWorkout);
   };
 
   // const deleteWorkout = (id) => {

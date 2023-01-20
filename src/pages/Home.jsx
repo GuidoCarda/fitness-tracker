@@ -109,7 +109,7 @@ export async function loader() {
   try {
     const { error, data } = await supabase
       .from("workouts")
-      .select("*")
+      .select()
       .order("created_at", { ascending: false });
 
     if (error) throw error;
