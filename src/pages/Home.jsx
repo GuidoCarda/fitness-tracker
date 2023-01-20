@@ -25,20 +25,21 @@ const Home = () => {
   const fetcher = useFetcher();
   let submit = useSubmit();
 
-  const deleteWorkoutTest = () => {
-    console.log(data);
-    submit(data, {
-      method: "delete",
-      action: `/workouts/${data.id}/delete`,
-    });
-  };
+  // const deleteWorkoutTest = () => {
+  //   console.log(data);
+  //   submit(data, {
+  //     method: "delete",
+  //     action: `/workouts/${data.id}/delete`,
+  //   });
+  // };
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between font">
         <h1 className="text-4xl font-bold ">Entrenamientos</h1>
+
         <button
-          className="bg-cyan-700 text-white px-4 py-1 rounded-lg"
+          className="bg-emerald-600 text-white px-4 py-2 rounded-lg"
           onClick={() => setNewWorkout(!newWorkout)}
         >
           Nuevo Entrenamiento
@@ -54,30 +55,43 @@ const Home = () => {
 
       <section>
         <div className="flex mt-10">
-          <button className="ml-auto bg-red-300/70 border-2 border-red-300 text-red-800 px-4 py-1 rounded-lg font-bold">
-            Eliminar todos
-          </button>
+          {loaderData.length !== 0 ? (
+            <fetcher.Form
+              className="ml-auto"
+              method="delete"
+              action={`/workouts/delete`}
+            >
+              <button className=" bg-red-300/70 border-2 border-red-300 text-red-800 px-4 py-1 rounded-lg font-bold">
+                Eliminar todos
+              </button>
+            </fetcher.Form>
+          ) : null}
         </div>
         <ul className="flex flex-col gap-4 mt-4">
           {loaderData.length !== 0 ? (
             loaderData.map((workout, idx) => (
               <li
                 key={idx}
-                className="border-2 border-neutral-400 h-24 p-4 rounded-lg flex items-center justify-between"
+                className="border-2 border-neutral-400 h-24  rounded-lg flex items-center justify-between"
               >
-                <Link to={`/workouts/${workout?.id}`}>{workout.name}</Link>
-                <fetcher.Form
+                <Link
+                  className=" h-full w-full p-4 flex items-center"
+                  to={`/workouts/${workout?.id}`}
+                >
+                  {workout.name}
+                </Link>
+
+                {/* <fetcher.Form
                   method="delete"
-                  action={`/workouts/${workout?.id}/delete`}
+                  action={`/workouts/delete`}
                 >
                   <button
                     type="submit"
-                    onClick={() => deleteWorkoutTest(workout.id)}
                     className="h-10 w-10 bg-neutral-500 rounded-md grid place-content-center"
                   >
                     x
                   </button>
-                </fetcher.Form>
+                </fetcher.Form> */}
               </li>
             ))
           ) : (
@@ -99,6 +113,8 @@ export async function loader() {
       .order("created_at", { ascending: false });
 
     if (error) throw error;
+
+    console.log(data);
 
     return data;
   } catch (error) {
@@ -128,13 +144,11 @@ export async function createAction({ request }) {
 }
 
 export async function deleteAction({ params }) {
-  const workoutId = params.id;
-
   try {
     const { error, data } = await supabase
       .from("workouts")
       .delete()
-      .eq("id", workoutId);
+      .neq("id", 0);
 
     if (error) throw error;
 
@@ -152,7 +166,7 @@ function WorkoutInput() {
       <Form
         method="post"
         action="/"
-        className="border-2 px-6 py-8 flex flex-col mt-6 rounded-md bg-white"
+        className="bg-neutral-100 px-6 py-8 flex flex-col mt-6 rounded-md"
       >
         <h2 className="text-2xl font-semibold mb-4">Nuevo Entrenamiento</h2>
 
@@ -161,7 +175,7 @@ function WorkoutInput() {
             Nombre
           </label>
           <input
-            className="border-2 border-neutral-600 rounded-md h-10 p-2"
+            className="border-2 border-neutral-300 out  rounded-md h-10 p-2"
             type="text"
             value={name}
             name="workout-name"
@@ -171,7 +185,7 @@ function WorkoutInput() {
 
         <button
           disabled={name.length === 0}
-          className="mt-4 ml-auto bg-cyan-700 text-white px-4 py-1 rounded-lg disabled:bg-neutral-500"
+          className="mt-4 ml-auto bg-emerald-600 text-white px-4 py-2 rounded-lg disabled:bg-neutral-500 disabled:text-neutral-300"
         >
           Crear
         </button>
