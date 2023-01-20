@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, useLoaderData } from "react-router-dom";
-import { WorkoutsContext } from "../context/WorkoutsContext";
+import { Link, useLoaderData, useParams } from "react-router-dom";
 import useDebouncedValue from "../hooks/useDebouncedValue";
 import { supabase } from "../supabaseClient";
 
@@ -46,36 +45,18 @@ const Workout = () => {
 
   const [workout, setWorkout] = useState([]);
 
+  const addExercise = (exercise) => {
+    setWorkout([...workout, exercise]);
+    setQuery("");
+    setQueryResults([]);
+  };
+
   console.log(loaderData);
-
-  const { workouts, addExercise } = useContext(WorkoutsContext);
-
-  // const currentWorkout = workouts.find((w) => w.id == loaderData);
 
   const fetchData = async () => {
     const data = await simulatedFetch(debouncedQuery);
     setQueryResults(data);
-    console.log(data);
   };
-
-  // const pushExercises = async () => {
-  //   try {
-  //     exercises.forEach(async (value) => {
-  //       const { error, data } = await supabase
-  //         .from("exercises")
-  //         .insert({
-  //           name: value.name,
-  //           body_part: value.body_part,
-  //         })
-  //         .select("*");
-
-  //       if (error) throw error;
-  //       console.log(data);
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   useEffect(() => {
     if (!debouncedQuery) return;
@@ -91,7 +72,18 @@ const Workout = () => {
         </Link>
       </div>
 
-      <div className="bg-neutral-100 rounded-md mt-20 px-6 py-8">
+      <section className="mt-10">
+        {loaderData ? (
+          <div>
+            <h2 className="text-2xl font-bold">
+              Workout name: {loaderData.name}
+            </h2>
+            <p className="mt-2">{loaderData.created_at}</p>
+          </div>
+        ) : null}
+      </section>
+
+      <div className="bg-neutral-100 rounded-md mt-10 px-6 py-8">
         <h2 className="text-2xl font-semibold mb-4">Nuevo ejercicio</h2>
 
         <div className="flex flex-col ">
@@ -110,9 +102,7 @@ const Workout = () => {
             {queryResults.length !== 0 && query ? (
               queryResults.map((result) => (
                 <li>
-                  <button
-                    onClick={() => addExercise(currentWorkout?.id, result)}
-                  >
+                  <button onClick={() => addExercise(result)}>
                     {result.name}
                   </button>
                 </li>
@@ -125,23 +115,101 @@ const Workout = () => {
       </div>
 
       <section className="mt-10">
-        {loaderData ? (
-          <div>
-            <h2 className="text-2xl font-bold">
-              Workout name: {loaderData.name}
-            </h2>
-            <p className="mt-2">{loaderData.created_at}</p>
-          </div>
-        ) : null}
+        <h2 className="text-2xl font-bold mb-4">Exercises</h2>
+
+        <ul className="flex flex-col gap-2">
+          {workout.length !== 0
+            ? workout.map((ex) => (
+                <li>
+                  <WorkoutListExercise name={ex.name} />
+                </li>
+              ))
+            : null}
+        </ul>
       </section>
     </div>
   );
 };
 
-// simulated fetch
-// async function getWorkout(id) {
+function WorkoutListExercise({ name }) {
+  const [sets, setSets] = useState([{ id: 0, reps: 0, weight: 0 }]);
+
+  const handleChange = (e, id) => {
+    const { value, name: fieldName } = e.currentTarget;
+
+    setSets(
+      sets.map((set) => {
+        return set.id === id ? { ...set, [fieldName]: value } : set;
+      })
+    );
+  };
+
+  const addSet = () => {
+    const setId = sets.length;
+    const { reps: lastSetReps, weight: lastSetWeight } = sets.at(-1);
+
+    if (lastSetReps !== 0) {
+      return setSets([
+        ...sets,
+        { id: setId, reps: lastSetReps, weight: lastSetWeight },
+      ]);
+    }
+
+    setSets([...sets, { id: setId, reps: 0, weight: 0 }]);
+  };
+
+  return (
+    <div className=" border-2 border-neutral-200 p-4 rounded-md">
+      <p>{name}</p>
+
+      {sets.map((set, idx) => {
+        return (
+          <div className="flex flex-col " key={idx}>
+            <div className="flex w-full">
+              <span className="w-10 h-10 flex-none grid place-content-center">
+                1
+              </span>
+
+              <div className="flex gap-2 items-center w-full justify-center">
+                <label htmlFor="">reps</label>
+                <input
+                  type="text"
+                  name="reps"
+                  value={set.reps}
+                  onChange={(e) => handleChange(e, idx)}
+                  className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
+                />
+              </div>
+
+              <div className="flex gap-2 items-center w-full justify-center">
+                <label htmlFor="">weight</label>
+                <input
+                  type="text"
+                  name="weight"
+                  value={set.weight}
+                  onChange={(e) => handleChange(e, idx)}
+                  className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
+                />
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      <button
+        onClick={addSet}
+        className="place-self-start px-4 py-2 mt-4 bg-neutral-200 rounded-md"
+      >
+        agregar serie
+      </button>
+    </div>
+  );
+}
+
 //   const isOk = true;
 
+// simulated fetch
+// async function getWorkout(id) {
 //   console.log(id);
 //   return new Promise((resolve, reject) => {
 //     if (isOk) {
@@ -151,20 +219,47 @@ const Workout = () => {
 //   });
 // }
 
+// const pushExercises = async () => {
+//   try {
+//     exercises.forEach(async (value) => {
+//       const { error, data } = await supabase
+//         .from("exercises")
+//         .insert({
+//           name: value.name,
+//           body_part: value.body_part,
+//         })
+//         .select("*");
+
+//       if (error) throw error;
+//       console.log(data);
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
 export async function loader({ params }) {
   console.log(params.id);
-  try {
-    const { error, data } = await supabase
-      .from("workouts")
-      .select("*")
-      .eq("id", params.id);
+  // try {
+  //   const { error, data } = await supabase
+  //     .from("workouts")
+  //     .select("*")
+  //     .eq("id", params.id);
 
-    if (error) throw error;
+  //   if (error) throw error;
 
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
+  //   return data;
+  // } catch (error) {
+  //   console.log(error);
+  // }
+
+  return [
+    {
+      created_at: "2023-01-20T12:16:23.947648+00:00",
+      id: 12,
+      name: "Entrenamiento tiron",
+    },
+  ];
 }
 
 export default Workout;
