@@ -47,6 +47,12 @@ const Workout = () => {
   const [sets, setSets] = useState([]);
 
   const addExercise = (exercise) => {
+    const alreadyInWorkout = workout.find(
+      (workoutExercise) => workoutExercise.id === exercise.id
+    );
+
+    if (alreadyInWorkout) return;
+
     setWorkout([...workout, exercise]);
     setSets([
       ...sets,
@@ -193,33 +199,6 @@ const Workout = () => {
 };
 
 function WorkoutListExercise({ name, addSet, handleSetChange, sets }) {
-  // console.log(sets);
-  // const [sets, setSets] = useState([{ id: 0, reps: 0, weight: 0 }]);
-
-  // const handleChange = (e, id) => {
-  //   const { value, name: fieldName } = e.currentTarget;
-
-  //   setSets(
-  //     sets.map((set) => {
-  //       return set.id === id ? { ...set, [fieldName]: value } : set;
-  //     })
-  //   );
-  // };
-
-  // const addSet = () => {
-  //   const setId = sets.length;
-  //   const { reps: lastSetReps, weight: lastSetWeight } = sets.at(-1);
-
-  //   if (lastSetReps !== 0) {
-  //     return setSets([
-  //       ...sets,
-  //       { id: setId, reps: lastSetReps, weight: lastSetWeight },
-  //     ]);
-  //   }
-
-  //   setSets([...sets, { id: setId, reps: 0, weight: 0 }]);
-  // };
-
   return (
     <div className=" border-2 border-neutral-200 p-4 rounded-md">
       <p>{name}</p>
@@ -230,13 +209,13 @@ function WorkoutListExercise({ name, addSet, handleSetChange, sets }) {
           <div className="flex flex-col " key={set.setId}>
             <div className="flex w-full">
               <span className="w-10 h-10 flex-none grid place-content-center">
-                {set.setId}
+                {set.setId + 1}
               </span>
 
               <div className="flex gap-2 items-center w-full justify-center">
                 <label htmlFor="">reps</label>
                 <input
-                  type="text"
+                  type="number"
                   name="reps"
                   value={set.reps}
                   onChange={(e) => handleSetChange(e, set)}
@@ -247,7 +226,7 @@ function WorkoutListExercise({ name, addSet, handleSetChange, sets }) {
               <div className="flex gap-2 items-center w-full justify-center">
                 <label htmlFor="">weight</label>
                 <input
-                  type="text"
+                  type="number"
                   name="weight"
                   value={set.weight}
                   onChange={(e) => handleSetChange(e, set)}
