@@ -44,14 +44,66 @@ const Workout = () => {
   const debouncedQuery = useDebouncedValue(query);
 
   const [workout, setWorkout] = useState([]);
+  const [sets, setSets] = useState([]);
 
   const addExercise = (exercise) => {
     setWorkout([...workout, exercise]);
+    setSets([
+      ...sets,
+      { exerciseId: exercise.id, setId: 0, reps: 0, weight: 0 },
+    ]);
     setQuery("");
     setQueryResults([]);
   };
 
-  console.log(loaderData);
+  const addSet = (id) => {
+    const exerciseSets = sets.filter((e) => e.exerciseId === id);
+
+    const {
+      exerciseId,
+      setId: lastSetId,
+      reps: lastSetReps,
+      weight: lastSetWeight,
+    } = exerciseSets.at(-1);
+
+    const { name } = workout.find((ex) => ex.id === exerciseId);
+
+    console.log(name, lastSetReps, lastSetWeight);
+
+    if (lastSetReps !== 0) {
+      return setSets([
+        ...sets,
+        {
+          exerciseId,
+          setId: lastSetId + 1,
+          reps: lastSetReps,
+          weight: lastSetWeight,
+        },
+      ]);
+    }
+
+    setSets([
+      ...sets,
+      { exerciseId, setId: lastSetId + 1, reps: 0, weight: 0 },
+    ]);
+  };
+
+  const handleSetChange = (e, set) => {
+    const { value, name: fieldName } = e.currentTarget;
+
+    const { exerciseId, setId } = set;
+
+    setSets(
+      sets.map((set) => {
+        if (set.exerciseId === exerciseId && set.setId === setId) {
+          return { ...set, [fieldName]: Number(value) };
+        }
+        return set;
+      })
+    );
+  };
+
+  // console.log(loaderData);
 
   const fetchData = async () => {
     const data = await simulatedFetch(debouncedQuery);
@@ -121,53 +173,64 @@ const Workout = () => {
           {workout.length !== 0
             ? workout.map((ex) => (
                 <li>
-                  <WorkoutListExercise name={ex.name} />
+                  <WorkoutListExercise
+                    name={ex.name}
+                    addSet={addSet}
+                    handleSetChange={handleSetChange}
+                    sets={sets.filter((setEx) => setEx.exerciseId === ex.id)}
+                  />
                 </li>
               ))
             : null}
         </ul>
+
+        <button className="bg-emerald-600 text-white px-4 py-2 rounded-lg absolute bottom-10 right-10">
+          Guardar entrenamiento
+        </button>
       </section>
     </div>
   );
 };
 
-function WorkoutListExercise({ name }) {
-  const [sets, setSets] = useState([{ id: 0, reps: 0, weight: 0 }]);
+function WorkoutListExercise({ name, addSet, handleSetChange, sets }) {
+  // console.log(sets);
+  // const [sets, setSets] = useState([{ id: 0, reps: 0, weight: 0 }]);
 
-  const handleChange = (e, id) => {
-    const { value, name: fieldName } = e.currentTarget;
+  // const handleChange = (e, id) => {
+  //   const { value, name: fieldName } = e.currentTarget;
 
-    setSets(
-      sets.map((set) => {
-        return set.id === id ? { ...set, [fieldName]: value } : set;
-      })
-    );
-  };
+  //   setSets(
+  //     sets.map((set) => {
+  //       return set.id === id ? { ...set, [fieldName]: value } : set;
+  //     })
+  //   );
+  // };
 
-  const addSet = () => {
-    const setId = sets.length;
-    const { reps: lastSetReps, weight: lastSetWeight } = sets.at(-1);
+  // const addSet = () => {
+  //   const setId = sets.length;
+  //   const { reps: lastSetReps, weight: lastSetWeight } = sets.at(-1);
 
-    if (lastSetReps !== 0) {
-      return setSets([
-        ...sets,
-        { id: setId, reps: lastSetReps, weight: lastSetWeight },
-      ]);
-    }
+  //   if (lastSetReps !== 0) {
+  //     return setSets([
+  //       ...sets,
+  //       { id: setId, reps: lastSetReps, weight: lastSetWeight },
+  //     ]);
+  //   }
 
-    setSets([...sets, { id: setId, reps: 0, weight: 0 }]);
-  };
+  //   setSets([...sets, { id: setId, reps: 0, weight: 0 }]);
+  // };
 
   return (
     <div className=" border-2 border-neutral-200 p-4 rounded-md">
       <p>{name}</p>
 
       {sets.map((set, idx) => {
+        console.log(set);
         return (
-          <div className="flex flex-col " key={idx}>
+          <div className="flex flex-col " key={set.setId}>
             <div className="flex w-full">
               <span className="w-10 h-10 flex-none grid place-content-center">
-                1
+                {set.setId}
               </span>
 
               <div className="flex gap-2 items-center w-full justify-center">
@@ -176,7 +239,7 @@ function WorkoutListExercise({ name }) {
                   type="text"
                   name="reps"
                   value={set.reps}
-                  onChange={(e) => handleChange(e, idx)}
+                  onChange={(e) => handleSetChange(e, set)}
                   className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
                 />
               </div>
@@ -187,7 +250,7 @@ function WorkoutListExercise({ name }) {
                   type="text"
                   name="weight"
                   value={set.weight}
-                  onChange={(e) => handleChange(e, idx)}
+                  onChange={(e) => handleSetChange(e, set)}
                   className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
                 />
               </div>
@@ -197,7 +260,7 @@ function WorkoutListExercise({ name }) {
       })}
 
       <button
-        onClick={addSet}
+        onClick={() => addSet(sets[0].exerciseId)}
         className="place-self-start px-4 py-2 mt-4 bg-neutral-200 rounded-md"
       >
         agregar serie
