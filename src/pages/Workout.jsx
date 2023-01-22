@@ -50,21 +50,21 @@ const Workout = () => {
     setWorkout([...workout, exercise]);
     setSets([
       ...sets,
-      { exerciseId: exercise.id, setId: 0, reps: 0, weight: 0 },
+      { exercise_id: exercise.id, set_id: 0, reps: 0, weight: 0 },
     ]);
   };
 
   const addSet = (id) => {
-    const exerciseSets = sets.filter((e) => e.exerciseId === id);
+    const exerciseSets = sets.filter((e) => e.exercise_id === id);
 
     const {
-      exerciseId,
-      setId: lastSetId,
+      exercise_id,
+      set_id: lastSetId,
       reps: lastSetReps,
       weight: lastSetWeight,
     } = exerciseSets.at(-1);
 
-    const { name } = workout.find((ex) => ex.id === exerciseId);
+    const { name } = workout.find((ex) => ex.id === exercise_id);
 
     console.log(name, lastSetReps, lastSetWeight);
 
@@ -72,8 +72,8 @@ const Workout = () => {
       return setSets([
         ...sets,
         {
-          exerciseId,
-          setId: lastSetId + 1,
+          exercise_id,
+          set_id: lastSetId + 1,
           reps: lastSetReps,
           weight: lastSetWeight,
         },
@@ -82,26 +82,24 @@ const Workout = () => {
 
     setSets([
       ...sets,
-      { exerciseId, setId: lastSetId + 1, reps: 0, weight: 0 },
+      { exercise_id, set_id: lastSetId + 1, reps: 0, weight: 0 },
     ]);
   };
 
   const handleSetChange = (e, set) => {
     const { value, name: fieldName } = e.currentTarget;
 
-    const { exerciseId, setId } = set;
+    const { exercise_id, set_id } = set;
 
     setSets(
       sets.map((set) => {
-        if (set.exerciseId === exerciseId && set.setId === setId) {
+        if (set.exercise_id === exercise_id && set.set_id === set_id) {
           return { ...set, [fieldName]: Number(value) };
         }
         return set;
       })
     );
   };
-
-  // console.log(loaderData);
 
   const handleWorkoutSave = () => {
     const finalWorkout = sets.map((set) => {
@@ -112,7 +110,7 @@ const Workout = () => {
 
     let formData = new FormData();
 
-    formData.append("username", finalWorkout);
+    formData.append("finalWorkout", JSON.stringify(finalWorkout));
     formData.append("intent", "save-workout");
 
     fetcher.submit(formData, {
@@ -120,6 +118,8 @@ const Workout = () => {
       action: `/workouts/${loaderData.id}`,
     });
   };
+
+  // console.log(loaderData);
 
   return (
     <div>
@@ -167,7 +167,7 @@ const Workout = () => {
                     name={ex.name}
                     addSet={addSet}
                     handleSetChange={handleSetChange}
-                    sets={sets.filter((setEx) => setEx.exerciseId === ex.id)}
+                    sets={sets.filter((setEx) => setEx.exercise_id === ex.id)}
                   />
                 </li>
               ))
@@ -231,10 +231,10 @@ function WorkoutListExercise({ name, addSet, handleSetChange, sets }) {
       {sets.map((set, idx) => {
         // console.log(set);
         return (
-          <div className="flex flex-col " key={set.setId}>
+          <div className="flex flex-col " key={set.set_id}>
             <div className="flex w-full">
               <span className="w-10 h-10 flex-none grid place-content-center">
-                {set.setId + 1}
+                {set.set_id + 1}
               </span>
 
               <div className="flex gap-2 items-center w-full justify-center">
@@ -264,7 +264,7 @@ function WorkoutListExercise({ name, addSet, handleSetChange, sets }) {
       })}
 
       <button
-        onClick={() => addSet(sets[0].exerciseId)}
+        onClick={() => addSet(sets[0].exercise_id)}
         className="place-self-start px-4 py-2 mt-4 bg-neutral-200 rounded-md"
       >
         agregar serie
@@ -279,19 +279,20 @@ export async function action({ request }) {
   let formData = Object.fromEntries(await request.formData());
 
   const { intent, finalWorkout } = formData;
-  console.log(intent);
-  console.log(finalWorkout);
+
+  const parsedWorkout = JSON.parse(finalWorkout);
 
   if (intent === "save-workout") {
     try {
-      // const { error, data } = await supabase
-      //   .from("workouts_exercises")
-      //   .insert()
-      //   .select();
+      const { error, data } = await supabase
+        .from("workouts_exercises")
+        .insert(parsedWorkout)
+        .select("*");
 
       console.log("saving...");
+      console.log(data);
 
-      // if (error) throw error;
+      if (error) throw error;
     } catch (error) {
       console.log(error);
     }
@@ -306,26 +307,20 @@ export async function action({ request }) {
 
 export async function loader({ params }) {
   console.log(params.id);
-  // try {
-  //   const { error, data } = await supabase
-  //     .from("workouts")
-  //     .select("*")
-  //     .eq("id", params.id);
+  try {
+    const { error, data } = await supabase
+      .from("workouts")
+      .select("*")
+      .eq("id", params.id);
 
-  //   if (error) throw error;
+    if (error) throw error;
 
-  //   return data;
-  // } catch (error) {
-  //   console.log(error);
-  // }
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 
-  return [
-    {
-      created_at: "2023-01-20T12:16:23.947648+00:00",
-      id: 12,
-      name: "Entrenamiento tiron",
-    },
-  ];
+  return data;
 }
 
 export default Workout;
