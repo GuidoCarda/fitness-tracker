@@ -1,9 +1,15 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link, useLoaderData, useParams } from "react-router-dom";
-import useDebouncedValue from "../hooks/useDebouncedValue";
+import React, { useState } from "react";
+
+//Routing
+import { Link, useFetcher, useLoaderData } from "react-router-dom";
+
+//Components
+import SearchExerciseInput from "../components/SearchExerciseInput";
+
+//Supabase client
 import { supabase } from "../supabaseClient";
 
-const exercises = [
+export const exercises = [
   { id: 1, name: "push ups", body_part: "chest" },
   { id: 2, name: "pull ups", body_part: "back" },
   { id: 3, name: "rows", body_part: "back" },
@@ -24,42 +30,28 @@ const exercises = [
   { id: 18, name: "inclined push ups", body_part: "chest" },
 ];
 
-function simulatedFetch(query) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(
-        exercises.filter((exercise) =>
-          exercise.name.toLowerCase().includes(query)
-        )
-      );
-    }, 1000);
-  });
-}
-
 const Workout = () => {
   const [loaderData] = useLoaderData();
 
-  const [query, setQuery] = useState("");
-  const [queryResults, setQueryResults] = useState([]);
-  const debouncedQuery = useDebouncedValue(query);
+  // interact with loaders and actions without causing navigation
+  const fetcher = useFetcher();
 
   const [workout, setWorkout] = useState([]);
   const [sets, setSets] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
 
   const addExercise = (exercise) => {
     const alreadyInWorkout = workout.find(
       (workoutExercise) => workoutExercise.id === exercise.id
     );
 
-    if (alreadyInWorkout) return;
+    if (alreadyInWorkout) return alert("El ejercicio ya esta en la rutina");
 
     setWorkout([...workout, exercise]);
     setSets([
       ...sets,
       { exerciseId: exercise.id, setId: 0, reps: 0, weight: 0 },
     ]);
-    setQuery("");
-    setQueryResults([]);
   };
 
   const addSet = (id) => {
@@ -111,15 +103,23 @@ const Workout = () => {
 
   // console.log(loaderData);
 
-  const fetchData = async () => {
-    const data = await simulatedFetch(debouncedQuery);
-    setQueryResults(data);
-  };
+  const handleWorkoutSave = () => {
+    const finalWorkout = sets.map((set) => {
+      return { workout_id: loaderData.id, ...set };
+    });
 
-  useEffect(() => {
-    if (!debouncedQuery) return;
-    fetchData(debouncedQuery);
-  }, [debouncedQuery]);
+    console.log(finalWorkout);
+
+    let formData = new FormData();
+
+    formData.append("username", finalWorkout);
+    formData.append("intent", "save-workout");
+
+    fetcher.submit(formData, {
+      method: "post",
+      action: `/workouts/${loaderData.id}`,
+    });
+  };
 
   return (
     <div>
@@ -141,41 +141,25 @@ const Workout = () => {
         ) : null}
       </section>
 
-      <div className="bg-neutral-100 rounded-md mt-10 px-6 py-8">
-        <h2 className="text-2xl font-semibold mb-4">Nuevo ejercicio</h2>
-
-        <div className="flex flex-col ">
-          <label htmlFor="" className="mb-1">
-            Nombre
-          </label>
-          <input
-            className="border-2 border-neutral-300 rounded-md h-10 p-2"
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.currentTarget.value.toLowerCase())}
-          />
+      <section className="mt-10 ">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Exercises</h2>
+          <button
+            className="bg-emerald-600 text-white px-4 py-2 rounded-lg"
+            onClick={() => setIsOpen((prev) => !prev)}
+          >
+            Agregar ejercicio
+          </button>
         </div>
-        {queryResults.length !== 0 && (
-          <ul className="pt-6 flex flex-col gap-2">
-            {queryResults.length !== 0 && query ? (
-              queryResults.map((result) => (
-                <li>
-                  <button onClick={() => addExercise(result)}>
-                    {result.name}
-                  </button>
-                </li>
-              ))
-            ) : !debouncedQuery ? null : (
-              <li>No se encontraron coincidencias</li>
-            )}
-          </ul>
-        )}
-      </div>
 
-      <section className="mt-10">
-        <h2 className="text-2xl font-bold mb-4">Exercises</h2>
+        {isOpen ? (
+          <SearchExerciseInput
+            addExercise={addExercise}
+            setIsOpen={setIsOpen}
+          />
+        ) : null}
 
-        <ul className="flex flex-col gap-2">
+        <ul className="flex flex-col gap-2 mt-6">
           {workout.length !== 0
             ? workout.map((ex) => (
                 <li>
@@ -190,9 +174,50 @@ const Workout = () => {
             : null}
         </ul>
 
-        <button className="bg-emerald-600 text-white px-4 py-2 rounded-lg absolute bottom-10 right-10">
-          Guardar entrenamiento
-        </button>
+        {/* {workout.length !== 0 && (
+          <fetcher.Form>
+            <button
+              type="submit"
+              name="intent"
+              value="save-workout"
+              className="bg-emerald-600 text-white px-4 py-2 rounded-lg absolute bottom-10 right-10"
+            >
+              Guardar entrenamiento
+            </button>
+          </fetcher.Form>
+        )} */}
+
+        <fetcher.Form>
+          <button
+            type="button"
+            name="intent"
+            onClick={handleWorkoutSave}
+            value="save-workout"
+            className="bg-emerald-600 text-white px-4 py-2 rounded-lg absolute bottom-40 right-10"
+          >
+            Guardar entrenamiento
+          </button>
+        </fetcher.Form>
+        <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
+          <button
+            type="button"
+            name="intent"
+            value="edit-workout"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg absolute bottom-24 right-10"
+          >
+            Editar entrenamiento
+          </button>
+        </fetcher.Form>
+        <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
+          <button
+            type="button"
+            name="intent"
+            value="delete-workout"
+            className="bg-red-600 text-white px-4 py-2 rounded-lg absolute bottom-10 right-10"
+          >
+            Eliminar entrenamiento
+          </button>
+        </fetcher.Form>
       </section>
     </div>
   );
@@ -204,7 +229,7 @@ function WorkoutListExercise({ name, addSet, handleSetChange, sets }) {
       <p>{name}</p>
 
       {sets.map((set, idx) => {
-        console.log(set);
+        // console.log(set);
         return (
           <div className="flex flex-col " key={set.setId}>
             <div className="flex w-full">
@@ -248,6 +273,63 @@ function WorkoutListExercise({ name, addSet, handleSetChange, sets }) {
   );
 }
 
+export async function action({ request }) {
+  console.log("entro");
+
+  let formData = Object.fromEntries(await request.formData());
+
+  const { intent, finalWorkout } = formData;
+  console.log(intent);
+  console.log(finalWorkout);
+
+  if (intent === "save-workout") {
+    try {
+      // const { error, data } = await supabase
+      //   .from("workouts_exercises")
+      //   .insert()
+      //   .select();
+
+      console.log("saving...");
+
+      // if (error) throw error;
+    } catch (error) {
+      console.log(error);
+    }
+  } else if (intent === "edit-workout") {
+    console.log("editing workout");
+  } else if (intent === "delete-workout") {
+    console.log("deleting workout");
+  }
+
+  return null;
+}
+
+export async function loader({ params }) {
+  console.log(params.id);
+  // try {
+  //   const { error, data } = await supabase
+  //     .from("workouts")
+  //     .select("*")
+  //     .eq("id", params.id);
+
+  //   if (error) throw error;
+
+  //   return data;
+  // } catch (error) {
+  //   console.log(error);
+  // }
+
+  return [
+    {
+      created_at: "2023-01-20T12:16:23.947648+00:00",
+      id: 12,
+      name: "Entrenamiento tiron",
+    },
+  ];
+}
+
+export default Workout;
+
 //   const isOk = true;
 
 // simulated fetch
@@ -279,29 +361,3 @@ function WorkoutListExercise({ name, addSet, handleSetChange, sets }) {
 //     console.log(error);
 //   }
 // };
-
-export async function loader({ params }) {
-  console.log(params.id);
-  // try {
-  //   const { error, data } = await supabase
-  //     .from("workouts")
-  //     .select("*")
-  //     .eq("id", params.id);
-
-  //   if (error) throw error;
-
-  //   return data;
-  // } catch (error) {
-  //   console.log(error);
-  // }
-
-  return [
-    {
-      created_at: "2023-01-20T12:16:23.947648+00:00",
-      id: 12,
-      name: "Entrenamiento tiron",
-    },
-  ];
-}
-
-export default Workout;
