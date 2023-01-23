@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 
 //Routing
 import { Link, useFetcher, useLoaderData } from "react-router-dom";
@@ -31,7 +32,11 @@ export const exercises = [
 ];
 
 const Workout = () => {
-  const [loaderData] = useLoaderData();
+  const workoutData = useLoaderData();
+
+  const { data, data2 } = workoutData;
+
+  const [loaderData] = data;
 
   // interact with loaders and actions without causing navigation
   const fetcher = useFetcher();
@@ -39,6 +44,21 @@ const Workout = () => {
   const [workout, setWorkout] = useState([]);
   const [sets, setSets] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    //remove exerciseIds duplicates
+    const [...exercisesIds] = new Set(data2.map((item) => item.exercise_id));
+
+    //get a list of this workout exercises based on the list of exercisesIds
+    const workoutExercises = exercises.filter((exercise) =>
+      exercisesIds.includes(exercise.id)
+    );
+
+    //set to state the actual workout fetched exercises
+    setWorkout(workoutExercises);
+    //set to state the actual workout fetched sets, reps, weight per exercise
+    setSets(data2);
+  }, []);
 
   const addExercise = (exercise) => {
     const alreadyInWorkout = workout.find(
@@ -106,8 +126,6 @@ const Workout = () => {
       return { workout_id: loaderData.id, ...set };
     });
 
-    console.log(finalWorkout);
-
     let formData = new FormData();
 
     formData.append("finalWorkout", JSON.stringify(finalWorkout));
@@ -144,12 +162,14 @@ const Workout = () => {
       <section className="mt-10 ">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Exercises</h2>
-          <button
-            className="bg-emerald-600 text-white px-4 py-2 rounded-lg"
-            onClick={() => setIsOpen((prev) => !prev)}
-          >
-            Agregar ejercicio
-          </button>
+          {data2.length === 0 ? (
+            <button
+              className="bg-emerald-600 text-white px-4 py-2 rounded-lg"
+              onClick={() => setIsOpen((prev) => !prev)}
+            >
+              Agregar ejercicio
+            </button>
+          ) : null}
         </div>
 
         {isOpen ? (
@@ -313,14 +333,17 @@ export async function loader({ params }) {
       .select("*")
       .eq("id", params.id);
 
-    if (error) throw error;
+    const { error: error2, data: data2 } = await supabase
+      .from("workouts_exercises")
+      .select("*")
+      .eq("workout_id", params.id);
 
-    return data;
+    if (error || error2) throw error;
+
+    return { data, data2 };
   } catch (error) {
     console.log(error);
   }
-
-  return data;
 }
 
 export default Workout;
