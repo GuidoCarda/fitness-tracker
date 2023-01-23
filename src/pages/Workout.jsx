@@ -188,6 +188,7 @@ const Workout = () => {
                     addSet={addSet}
                     handleSetChange={handleSetChange}
                     sets={sets.filter((setEx) => setEx.exercise_id === ex.id)}
+                    canEdit={data2.length === 0}
                   />
                 </li>
               ))
@@ -207,43 +208,48 @@ const Workout = () => {
           </fetcher.Form>
         )} */}
 
-        <fetcher.Form>
-          <button
-            type="button"
-            name="intent"
-            onClick={handleWorkoutSave}
-            value="save-workout"
-            className="bg-emerald-600 text-white px-4 py-2 rounded-lg absolute bottom-40 right-10"
-          >
-            Guardar entrenamiento
-          </button>
-        </fetcher.Form>
-        <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
-          <button
-            type="button"
-            name="intent"
-            value="edit-workout"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg absolute bottom-24 right-10"
-          >
-            Editar entrenamiento
-          </button>
-        </fetcher.Form>
-        <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
-          <button
-            type="button"
-            name="intent"
-            value="delete-workout"
-            className="bg-red-600 text-white px-4 py-2 rounded-lg absolute bottom-10 right-10"
-          >
-            Eliminar entrenamiento
-          </button>
-        </fetcher.Form>
+        {data2.length === 0 && workout.length !== 0 && (
+          <>
+            <fetcher.Form>
+              <button
+                type="button"
+                name="intent"
+                onClick={handleWorkoutSave}
+                value="save-workout"
+                className="bg-emerald-600 text-white px-4 py-2 rounded-lg absolute bottom-40 right-10"
+              >
+                Guardar entrenamiento
+              </button>
+            </fetcher.Form>
+            <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
+              <button
+                type="button"
+                name="intent"
+                value="edit-workout"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg absolute bottom-24 right-10"
+              >
+                Editar entrenamiento
+              </button>
+            </fetcher.Form>
+            <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
+              <button
+                type="button"
+                name="intent"
+                value="delete-workout"
+                className="bg-red-600 text-white px-4 py-2 rounded-lg absolute bottom-10 right-10"
+              >
+                Eliminar entrenamiento
+              </button>
+            </fetcher.Form>
+          </>
+        )}
       </section>
     </div>
   );
 };
 
-function WorkoutListExercise({ name, addSet, handleSetChange, sets }) {
+function WorkoutListExercise({ name, addSet, handleSetChange, sets, canEdit }) {
+  console.log("canEdit: " + canEdit);
   return (
     <div className=" border-2 border-neutral-200 p-4 rounded-md">
       <p>{name}</p>
@@ -259,24 +265,36 @@ function WorkoutListExercise({ name, addSet, handleSetChange, sets }) {
 
               <div className="flex gap-2 items-center w-full justify-center">
                 <label htmlFor="">reps</label>
-                <input
-                  type="number"
-                  name="reps"
-                  value={set.reps}
-                  onChange={(e) => handleSetChange(e, set)}
-                  className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
-                />
+                {canEdit ? (
+                  <input
+                    type="number"
+                    name="reps"
+                    value={set.reps}
+                    onChange={(e) => handleSetChange(e, set)}
+                    className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
+                  />
+                ) : (
+                  <span className="bg-neutral-200 rounded-md w-10 h-8 grid place-items-center text-sm">
+                    {set.reps}
+                  </span>
+                )}
               </div>
 
               <div className="flex gap-2 items-center w-full justify-center">
                 <label htmlFor="">weight</label>
-                <input
-                  type="number"
-                  name="weight"
-                  value={set.weight}
-                  onChange={(e) => handleSetChange(e, set)}
-                  className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
-                />
+                {canEdit ? (
+                  <input
+                    type="number"
+                    name="weight"
+                    value={set.weight}
+                    onChange={(e) => handleSetChange(e, set)}
+                    className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
+                  />
+                ) : (
+                  <span className="bg-neutral-200 rounded-md w-10 h-8 grid place-items-center text-sm">
+                    {set.weight}
+                  </span>
+                )}
               </div>
             </div>
           </div>
