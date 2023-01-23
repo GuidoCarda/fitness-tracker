@@ -301,12 +301,14 @@ function WorkoutListExercise({ name, addSet, handleSetChange, sets, canEdit }) {
         );
       })}
 
-      <button
-        onClick={() => addSet(sets[0].exercise_id)}
-        className="place-self-start px-4 py-2 mt-4 bg-neutral-200 rounded-md"
-      >
-        agregar serie
-      </button>
+      {canEdit && (
+        <button
+          onClick={() => addSet(sets[0].exercise_id)}
+          className="place-self-start px-4 py-2 mt-4 bg-neutral-200 rounded-md"
+        >
+          agregar serie
+        </button>
+      )}
     </div>
   );
 }
