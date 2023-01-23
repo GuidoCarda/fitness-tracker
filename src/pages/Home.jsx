@@ -37,10 +37,10 @@ const Home = () => {
   return (
     <div>
       <div className="flex items-center justify-between font">
-        <h1 className="text-4xl font-bold ">Entrenamientos</h1>
+        <h1 className=" text-2xl md:text-4xl font-bold ">Entrenamientos</h1>
 
         <button
-          className="bg-emerald-600 text-white px-4 py-2 rounded-lg"
+          className="bg-emerald-600 text-white text-sm md:text-base  px-2  md:px-4 md:py-2 rounded-lg"
           onClick={() => setNewWorkout(!newWorkout)}
         >
           Nuevo Entrenamiento

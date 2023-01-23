@@ -54,11 +54,14 @@ const SearchExerciseInput = ({ addExercise, setIsOpen }) => {
         />
 
         {queryResults.length !== 0 && (
-          <ul className="bg-neutral-600 w-full flex flex-col gap-2 absolute top-20 z-10 left-0 rounded-md p-4">
+          <ul className="bg-white shadow-md shadow-neutral-300 w-full flex flex-col gap-2 absolute top-20 z-10 left-0 rounded-md p-4">
             {queryResults.length !== 0 && query ? (
               queryResults.map((result) => (
-                <li>
-                  <button onClick={() => handleAddExercise(result)}>
+                <li key={result.id}>
+                  <button
+                    className="w-full text-start text-neutral-500 hover:text-black"
+                    onClick={() => handleAddExercise(result)}
+                  >
                     {result.name}
                   </button>
                 </li>

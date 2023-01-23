@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 
 //Routing
-import { Link, useFetcher, useLoaderData } from "react-router-dom";
+import { Link, redirect, useFetcher, useLoaderData } from "react-router-dom";
 
 //Components
 import SearchExerciseInput from "../components/SearchExerciseInput";
@@ -182,7 +182,7 @@ const Workout = () => {
         <ul className="flex flex-col gap-2 mt-6">
           {workout.length !== 0
             ? workout.map((ex) => (
-                <li>
+                <li key={ex.id}>
                   <WorkoutListExercise
                     name={ex.name}
                     addSet={addSet}
@@ -231,17 +231,26 @@ const Workout = () => {
                 Editar entrenamiento
               </button>
             </fetcher.Form>
-            <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
-              <button
-                type="button"
-                name="intent"
-                value="delete-workout"
-                className="bg-red-600 text-white px-4 py-2 rounded-lg absolute bottom-10 right-10"
-              >
-                Eliminar entrenamiento
-              </button>
-            </fetcher.Form>
           </>
+        )}
+        {data2.length !== 0 && (
+          <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
+            <input
+              type="text"
+              value={loaderData.id}
+              name="workout_id"
+              hidden
+              readOnly
+            />
+            <button
+              type="submit"
+              name="intent"
+              value="delete-workout"
+              className="bg-red-600 text-white px-4 py-2 rounded-lg absolute bottom-10 right-10"
+            >
+              Eliminar entrenamiento
+            </button>
+          </fetcher.Form>
         )}
       </section>
     </div>
@@ -249,7 +258,6 @@ const Workout = () => {
 };
 
 function WorkoutListExercise({ name, addSet, handleSetChange, sets, canEdit }) {
-  console.log("canEdit: " + canEdit);
   return (
     <div className=" border-2 border-neutral-200 p-4 rounded-md">
       <p>{name}</p>
@@ -295,6 +303,7 @@ function WorkoutListExercise({ name, addSet, handleSetChange, sets, canEdit }) {
                     {set.weight}
                   </span>
                 )}
+                <span className="text-sm text-neutral-200">Kg</span>
               </div>
             </div>
           </div>
@@ -314,15 +323,17 @@ function WorkoutListExercise({ name, addSet, handleSetChange, sets, canEdit }) {
 }
 
 export async function action({ request }) {
-  console.log("entro");
-
   let formData = Object.fromEntries(await request.formData());
 
-  const { intent, finalWorkout } = formData;
+  const { intent } = formData;
 
-  const parsedWorkout = JSON.parse(finalWorkout);
+  console.log("Entro");
+  console.log(intent);
 
   if (intent === "save-workout") {
+    const { finalWorkout } = formData;
+    const parsedWorkout = JSON.parse(finalWorkout);
+
     try {
       const { error, data } = await supabase
         .from("workouts_exercises")
@@ -339,7 +350,21 @@ export async function action({ request }) {
   } else if (intent === "edit-workout") {
     console.log("editing workout");
   } else if (intent === "delete-workout") {
-    console.log("deleting workout");
+    const { workout_id } = formData;
+    console.log("editing...");
+    try {
+      const { error, data } = await supabase
+        .from("workouts")
+        .delete()
+        .eq("id", workout_id)
+        .select();
+
+      if (error) throw error;
+
+      return redirect("/");
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return null;
