@@ -10,6 +10,10 @@ import SearchExerciseInput from "../components/SearchExerciseInput";
 //Supabase client
 import { supabase } from "../supabaseClient";
 
+//React-icons
+import { FaRegTrashAlt } from "react-icons/fa";
+import { BiEdit } from "react-icons/bi";
+
 export const exercises = [
   { id: 1, name: "push ups", body_part: "chest" },
   { id: 2, name: "pull ups", body_part: "back" },
@@ -166,47 +170,65 @@ const Workout = () => {
       <section className="mt-10 ">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Exercises</h2>
-          {data2.length !== 0 && (
-            <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
-              <input
-                type="text"
-                value={loaderData.id}
-                name="workout_id"
-                hidden
-                readOnly
-              />
-              <button
-                type="submit"
-                name="intent"
-                value="delete-workout"
-                className="bg-red-600 text-sm sm:text-base text-white px-4 py-2 rounded-lg"
-              >
-                Eliminar entrenamiento
-              </button>
-            </fetcher.Form>
-          )}
 
-          {data2.length !== 0 && workout.length !== 0 && (
-            <>
+          <div className="flex gap-2">
+            {data2.length !== 0 && (
               <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
                 <input
                   type="text"
                   value={loaderData.id}
-                  readOnly
-                  hidden
                   name="workout_id"
+                  hidden
+                  readOnly
                 />
                 <button
                   type="submit"
                   name="intent"
-                  value="edit-workout"
-                  className="bg-blue-600 text-white text-sm sm:text-base  px-4 py-2 rounded-lg"
+                  value="delete-workout"
+                  className="bg-red-600 text-sm sm:text-base text-white p-2 flex items-center justify-center gap-2 md:px-4 md:py-2 rounded-lg"
                 >
-                  Editar entrenamiento
+                  <FaRegTrashAlt className="w-4 h-4" />
+                  <span className="hidden md:block">
+                    {fetcher.state === "submiting" ||
+                    fetcher.state === "loading"
+                      ? "Eliminando..."
+                      : "Eliminar"}
+                  </span>
                 </button>
               </fetcher.Form>
-            </>
-          )}
+            )}
+
+            {data2.length !== 0 && workout.length !== 0 && (
+              <>
+                <fetcher.Form
+                  method="post"
+                  action={`/workouts/${loaderData.id}`}
+                >
+                  <input
+                    type="text"
+                    value={loaderData.id}
+                    readOnly
+                    hidden
+                    name="workout_id"
+                  />
+                  <button
+                    type="submit"
+                    name="intent"
+                    value="edit-workout"
+                    className="bg-blue-600 text-white text-sm sm:text-base p-2 flex items-center justify-center gap-2 md:px-4 md:py-2 rounded-lg"
+                  >
+                    <BiEdit className="w-4 h-4" />
+                    <span className="hidden md:block">
+                      {fetcher.state === "submitting" ||
+                      fetcher.state === "loading"
+                        ? "Editando..."
+                        : "Editar"}{" "}
+                    </span>
+                  </button>
+                </fetcher.Form>
+              </>
+            )}
+          </div>
 
           {data2.length === 0 ? (
             <button
@@ -360,8 +382,14 @@ export async function action({ request }) {
 
   if (intent === "edit-workout") {
     const { workout_id } = formData;
-    console.log("edting...");
-    console.log("The workout id is: " + workout_id);
+
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log("edting...");
+        console.log("The workout id is: " + workout_id);
+        resolve();
+      }, 3000);
+    });
   }
 
   if (intent === "delete-workout") {

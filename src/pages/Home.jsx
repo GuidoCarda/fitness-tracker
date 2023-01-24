@@ -7,6 +7,7 @@ import {
   redirect,
   useFetcher,
   useLoaderData,
+  useNavigation,
   useSubmit,
 } from "react-router-dom";
 import { WorkoutsContext } from "../context/WorkoutsContext";
@@ -136,6 +137,12 @@ export async function createAction({ request }) {
 
     if (error) throw error;
 
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve();
+      }, 3000);
+    });
+
     const [workout] = data;
 
     return redirect(`/workouts/${workout.id}`);
@@ -161,6 +168,10 @@ export async function deleteAction({ params }) {
 
 function WorkoutInput() {
   const [name, setName] = useState("");
+  const navigation = useNavigation();
+
+  const busy =
+    navigation.state === "submitting" || navigation.state === "loading";
 
   return (
     <>
@@ -181,14 +192,16 @@ function WorkoutInput() {
             value={name}
             name="workout-name"
             onChange={(e) => setName(e.currentTarget.value)}
+            readOnly={busy}
+            disabled={busy}
           />
         </div>
 
         <button
-          disabled={name.length === 0}
+          disabled={name.length === 0 || busy}
           className="mt-4 ml-auto bg-emerald-600 text-white px-4 py-2 rounded-lg disabled:bg-neutral-500 disabled:text-neutral-300"
         >
-          Crear
+          {busy ? "Creando" : "Crear"}
         </button>
       </Form>
     </>
