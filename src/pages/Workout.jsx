@@ -111,6 +111,11 @@ const Workout = () => {
     ]);
   };
 
+  const deleteExercise = (id) => {
+    setWorkout(workout.filter((ex) => ex.id !== id));
+    setSets(sets.filter((set) => set.exercise_id !== id));
+  };
+
   const handleSetChange = (e, set) => {
     const { value, name: fieldName } = e.currentTarget;
 
@@ -168,10 +173,26 @@ const Workout = () => {
       </section>
 
       <section className="mt-10 ">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center mb-4">
           <h2 className="text-2xl font-bold">Exercises</h2>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 ml-auto">
+            {data2.length === 0 && workout.length !== 0 && (
+              <>
+                <fetcher.Form>
+                  <button
+                    type="button"
+                    name="intent"
+                    onClick={handleWorkoutSave}
+                    value="save-workout"
+                    className="bg-emerald-600 text-white px-4 py-2 rounded-lg"
+                  >
+                    Guardar entrenamiento
+                  </button>
+                </fetcher.Form>
+              </>
+            )}
+
             {data2.length !== 0 && (
               <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
                 <input
@@ -232,7 +253,7 @@ const Workout = () => {
 
           {data2.length === 0 ? (
             <button
-              className="bg-emerald-600 text-white px-4 py-2 rounded-lg"
+              className="bg-emerald-600 text-white ml-2 px-4 py-2 rounded-lg"
               onClick={() => setIsOpen((prev) => !prev)}
             >
               Agregar ejercicio
@@ -255,6 +276,7 @@ const Workout = () => {
                     name={ex.name}
                     addSet={addSet}
                     handleSetChange={handleSetChange}
+                    deleteExercise={deleteExercise}
                     sets={sets.filter((setEx) => setEx.exercise_id === ex.id)}
                     // canEdit={data2.length === 0}
                     canEdit={data2.length === 0}
@@ -263,22 +285,6 @@ const Workout = () => {
               ))
             : null}
         </ul>
-
-        {data2.length === 0 && workout.length !== 0 && (
-          <>
-            <fetcher.Form>
-              <button
-                type="button"
-                name="intent"
-                onClick={handleWorkoutSave}
-                value="save-workout"
-                className="bg-emerald-600 text-white px-4 py-2 rounded-lg absolute bottom-40 right-10"
-              >
-                Guardar entrenamiento
-              </button>
-            </fetcher.Form>
-          </>
-        )}
       </section>
     </div>
   );
@@ -288,9 +294,14 @@ function WorkoutListExercise({
   exerciseName,
   addSet,
   handleSetChange,
+  deleteExercise,
   sets,
   canEdit,
 }) {
+  const exercise_id = sets[0].exercise_id;
+
+  const handleDelete = () => deleteExercise(exercise_id);
+
   return (
     <div className=" border-2 border-neutral-200 p-4 rounded-md">
       <p>{exerciseName}</p>
@@ -343,12 +354,21 @@ function WorkoutListExercise({
       })}
 
       {canEdit && (
-        <button
-          onClick={() => addSet(sets[0].exercise_id)}
-          className="place-self-start px-4 py-2 mt-4 bg-neutral-200 rounded-md"
-        >
-          agregar serie
-        </button>
+        <>
+          <button
+            onClick={() => addSet(exercise_id)}
+            className="place-self-start px-4 py-2 mt-4 bg-neutral-200 rounded-md"
+          >
+            agregar serie
+          </button>
+
+          <button
+            onClick={handleDelete}
+            className="bg-red-300 px-4 py-2 mt-4 ml-2 rounded-md text-red-900"
+          >
+            eliminar ejercicio
+          </button>
+        </>
       )}
     </div>
   );
@@ -425,6 +445,13 @@ export async function loader({ params }) {
       .from("workouts_exercises")
       .select("*")
       .eq("workout_id", params.id);
+
+    // const { error, data } = await supabase
+    // .from("workouts_exercises")
+    // .select("")
+    // .eq("id", params.id);
+
+    if (data.length === 0) throw new Response("Not Found", { status: 404 });
 
     if (error || error2) throw error;
 
