@@ -79,6 +79,11 @@ const Workout = () => {
     ]);
   };
 
+  const deleteExercise = (id) => {
+    setWorkout(workout.filter((ex) => ex.id !== id));
+    setSets(sets.filter((set) => set.exercise_id !== id));
+  };
+
   const addSet = (id) => {
     const exerciseSets = sets.filter((e) => e.exercise_id === id);
 
@@ -111,9 +116,32 @@ const Workout = () => {
     ]);
   };
 
-  const deleteExercise = (id) => {
-    setWorkout(workout.filter((ex) => ex.id !== id));
-    setSets(sets.filter((set) => set.exercise_id !== id));
+  const deleteSet = (setToDelete) => {
+    console.log(setToDelete);
+    const { exercise_id: setToDelete_exercise_id, set_id: setToDelete_id } =
+      setToDelete;
+
+    console.log(setToDelete_exercise_id, setToDelete_id);
+
+    const filteredSets = sets.filter((set) => {
+      if (set.exercise_id !== setToDelete_exercise_id) return true;
+
+      if (set.set_id !== setToDelete_id) return true;
+    });
+
+    console.log(filteredSets.map((set) => ({ ...set, set_id: idx })));
+
+    // console.log(
+    //   filteredSets
+    //     .filter((set) => set.set_id !== setToDelete_id)
+    //     .map((set, idx) => ({ ...set, set_id: idx }))
+    // );
+
+    // setSets([
+    //   filteredSets
+    //     .filter((set) => set.set_id !== setToDelete_id)
+    //     .map((set, idx) => ({ ...set, set_id: idx })),
+    // ]);
   };
 
   const handleSetChange = (e, set) => {
@@ -147,10 +175,10 @@ const Workout = () => {
     });
   };
 
-  console.log("LoaderData");
-  console.log(loaderData);
-  console.log("data 2");
-  console.log(data2);
+  // console.log("LoaderData");
+  // console.log(loaderData);
+  // console.log("data 2");
+  // console.log(data2);
 
   return (
     <div>
@@ -273,10 +301,11 @@ const Workout = () => {
             ? workout.map((ex) => (
                 <li key={ex.id}>
                   <WorkoutListExercise
-                    name={ex.name}
+                    exerciseName={ex.name}
                     addSet={addSet}
                     handleSetChange={handleSetChange}
                     deleteExercise={deleteExercise}
+                    deleteSet={deleteSet}
                     sets={sets.filter((setEx) => setEx.exercise_id === ex.id)}
                     // canEdit={data2.length === 0}
                     canEdit={data2.length === 0}
@@ -295,10 +324,12 @@ function WorkoutListExercise({
   addSet,
   handleSetChange,
   deleteExercise,
+  deleteSet,
   sets,
   canEdit,
 }) {
-  const exercise_id = sets[0].exercise_id;
+  console.log(sets);
+  const exercise_id = sets.at(0).exercise_id;
 
   const handleDelete = () => deleteExercise(exercise_id);
 
@@ -348,6 +379,12 @@ function WorkoutListExercise({
                 )}
                 <span className="text-sm text-neutral-200">Kg</span>
               </div>
+              <button
+                onClick={() => deleteSet(set)}
+                className="h-10 w-10 grid flex-none rounded-md place-items-center bg-neutral-300"
+              >
+                x
+              </button>
             </div>
           </div>
         );
