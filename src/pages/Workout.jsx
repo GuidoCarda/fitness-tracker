@@ -46,6 +46,7 @@ const Workout = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    if (data2.length === 0) return;
     //remove exerciseIds duplicates
     const [...exercisesIds] = new Set(data2.map((item) => item.exercise_id));
 
@@ -137,7 +138,10 @@ const Workout = () => {
     });
   };
 
-  // console.log(loaderData);
+  console.log("LoaderData");
+  console.log(loaderData);
+  console.log("data 2");
+  console.log(data2);
 
   return (
     <div>
@@ -162,6 +166,48 @@ const Workout = () => {
       <section className="mt-10 ">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Exercises</h2>
+          {data2.length !== 0 && (
+            <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
+              <input
+                type="text"
+                value={loaderData.id}
+                name="workout_id"
+                hidden
+                readOnly
+              />
+              <button
+                type="submit"
+                name="intent"
+                value="delete-workout"
+                className="bg-red-600 text-sm sm:text-base text-white px-4 py-2 rounded-lg"
+              >
+                Eliminar entrenamiento
+              </button>
+            </fetcher.Form>
+          )}
+
+          {data2.length !== 0 && workout.length !== 0 && (
+            <>
+              <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
+                <input
+                  type="text"
+                  value={loaderData.id}
+                  readOnly
+                  hidden
+                  name="workout_id"
+                />
+                <button
+                  type="submit"
+                  name="intent"
+                  value="edit-workout"
+                  className="bg-blue-600 text-white text-sm sm:text-base  px-4 py-2 rounded-lg"
+                >
+                  Editar entrenamiento
+                </button>
+              </fetcher.Form>
+            </>
+          )}
+
           {data2.length === 0 ? (
             <button
               className="bg-emerald-600 text-white px-4 py-2 rounded-lg"
@@ -188,25 +234,13 @@ const Workout = () => {
                     addSet={addSet}
                     handleSetChange={handleSetChange}
                     sets={sets.filter((setEx) => setEx.exercise_id === ex.id)}
+                    // canEdit={data2.length === 0}
                     canEdit={data2.length === 0}
                   />
                 </li>
               ))
             : null}
         </ul>
-
-        {/* {workout.length !== 0 && (
-          <fetcher.Form>
-            <button
-              type="submit"
-              name="intent"
-              value="save-workout"
-              className="bg-emerald-600 text-white px-4 py-2 rounded-lg absolute bottom-10 right-10"
-            >
-              Guardar entrenamiento
-            </button>
-          </fetcher.Form>
-        )} */}
 
         {data2.length === 0 && workout.length !== 0 && (
           <>
@@ -221,49 +255,25 @@ const Workout = () => {
                 Guardar entrenamiento
               </button>
             </fetcher.Form>
-            <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
-              <button
-                type="button"
-                name="intent"
-                value="edit-workout"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg absolute bottom-24 right-10"
-              >
-                Editar entrenamiento
-              </button>
-            </fetcher.Form>
           </>
-        )}
-        {data2.length !== 0 && (
-          <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
-            <input
-              type="text"
-              value={loaderData.id}
-              name="workout_id"
-              hidden
-              readOnly
-            />
-            <button
-              type="submit"
-              name="intent"
-              value="delete-workout"
-              className="bg-red-600 text-white px-4 py-2 rounded-lg absolute bottom-10 right-10"
-            >
-              Eliminar entrenamiento
-            </button>
-          </fetcher.Form>
         )}
       </section>
     </div>
   );
 };
 
-function WorkoutListExercise({ name, addSet, handleSetChange, sets, canEdit }) {
+function WorkoutListExercise({
+  exerciseName,
+  addSet,
+  handleSetChange,
+  sets,
+  canEdit,
+}) {
   return (
     <div className=" border-2 border-neutral-200 p-4 rounded-md">
-      <p>{name}</p>
+      <p>{exerciseName}</p>
 
       {sets.map((set, idx) => {
-        // console.log(set);
         return (
           <div className="flex flex-col " key={set.set_id}>
             <div className="flex w-full">
@@ -327,8 +337,7 @@ export async function action({ request }) {
 
   const { intent } = formData;
 
-  console.log("Entro");
-  console.log(intent);
+  console.log("action intent: " + intent);
 
   if (intent === "save-workout") {
     const { finalWorkout } = formData;
@@ -347,11 +356,17 @@ export async function action({ request }) {
     } catch (error) {
       console.log(error);
     }
-  } else if (intent === "edit-workout") {
-    console.log("editing workout");
-  } else if (intent === "delete-workout") {
+  }
+
+  if (intent === "edit-workout") {
     const { workout_id } = formData;
-    console.log("editing...");
+    console.log("edting...");
+    console.log("The workout id is: " + workout_id);
+  }
+
+  if (intent === "delete-workout") {
+    const { workout_id } = formData;
+    console.log("deleting...");
     try {
       const { error, data } = await supabase
         .from("workouts")
@@ -371,7 +386,7 @@ export async function action({ request }) {
 }
 
 export async function loader({ params }) {
-  console.log(params.id);
+  // console.log(params.id);
   try {
     const { error, data } = await supabase
       .from("workouts")
@@ -392,19 +407,6 @@ export async function loader({ params }) {
 }
 
 export default Workout;
-
-//   const isOk = true;
-
-// simulated fetch
-// async function getWorkout(id) {
-//   console.log(id);
-//   return new Promise((resolve, reject) => {
-//     if (isOk) {
-//       resolve(id);
-//     }
-//     reject("error");
-//   });
-// }
 
 // const pushExercises = async () => {
 //   try {

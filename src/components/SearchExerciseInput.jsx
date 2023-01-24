@@ -36,7 +36,7 @@ const SearchExerciseInput = ({ addExercise, setIsOpen }) => {
     fetchData(debouncedQuery);
   }, [debouncedQuery]);
 
-  console.log(queryResults);
+  // console.log(queryResults);
 
   return (
     <div className=" bg-neutral-100 rounded-md mt-10 px-6 py-8 ">

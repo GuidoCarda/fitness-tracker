@@ -40,7 +40,7 @@ const Home = () => {
         <h1 className=" text-2xl md:text-4xl font-bold ">Entrenamientos</h1>
 
         <button
-          className="bg-emerald-600 text-white text-sm md:text-base  px-2  md:px-4 md:py-2 rounded-lg"
+          className="bg-emerald-600 text-white text-sm sm:text-base px-2 py-1 sm:px-4 sm:py-2 rounded-lg"
           onClick={() => setNewWorkout(!newWorkout)}
         >
           Nuevo Entrenamiento
@@ -62,7 +62,7 @@ const Home = () => {
               method="delete"
               action={`/workouts/delete`}
             >
-              <button className=" bg-red-300/70 border-2 border-red-300 text-red-800 px-4 py-1 rounded-lg font-bold">
+              <button className=" bg-red-300/70 border-2 text-sm sm:text-base border-red-300 text-red-800 px-2 py-1 sm:px-4 sm:py-2  rounded-lg font-bold">
                 Eliminar todos
               </button>
             </fetcher.Form>
