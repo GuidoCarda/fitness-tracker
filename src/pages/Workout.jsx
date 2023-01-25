@@ -49,6 +49,8 @@ const Workout = () => {
   const [sets, setSets] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
+  console.log(sets);
+
   useEffect(() => {
     if (data2.length === 0) return;
     //remove exerciseIds duplicates
@@ -123,25 +125,38 @@ const Workout = () => {
 
     console.log(setToDelete_exercise_id, setToDelete_id);
 
-    const filteredSets = sets.filter((set) => {
-      if (set.exercise_id !== setToDelete_exercise_id) return true;
+    // const filteredSets = sets.filter((set) => {
+    //   if (set.exercise_id !== setToDelete_exercise_id) return true;
 
-      if (set.set_id !== setToDelete_id) return true;
-    });
+    //   if (set.set_id !== setToDelete_id) return true;
+    // });
 
-    console.log(filteredSets.map((set) => ({ ...set, set_id: idx })));
+    // I need a way of setting the set_id start to 0 and on every iteration increment it by 1
 
-    // console.log(
-    //   filteredSets
-    //     .filter((set) => set.set_id !== setToDelete_id)
-    //     .map((set, idx) => ({ ...set, set_id: idx }))
-    // );
+    const setsCopy = [...sets];
 
-    // setSets([
-    //   filteredSets
-    //     .filter((set) => set.set_id !== setToDelete_id)
-    //     .map((set, idx) => ({ ...set, set_id: idx })),
-    // ]);
+    const exercise_id_sets = sets.filter(
+      (set) =>
+        set.exercise_id === setToDelete_exercise_id &&
+        set.set_id !== setToDelete_id
+    );
+
+    const firstIndex = sets.findIndex(
+      (set) => set.exercise_id === setToDelete_exercise_id
+    );
+
+    setsCopy.splice(
+      firstIndex,
+      exercise_id_sets.length + 1,
+      ...exercise_id_sets
+    );
+
+    //console.log(test);
+    console.log(setsCopy);
+
+    // console.log(filteredSets.map((set, idx) => ({ ...set, set_id: idx })));
+
+    setSets([...setsCopy]);
   };
 
   const handleSetChange = (e, set) => {
