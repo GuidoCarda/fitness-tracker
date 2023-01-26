@@ -1,20 +1,9 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
-
-//Routing
-import { Link, redirect, useFetcher, useLoaderData } from "react-router-dom";
-
-//Components
-import SearchExerciseInput from "../components/SearchExerciseInput";
-
-//Supabase client
+import React, { useState, useEffect, useContext } from "react";
+import { Link, useLoaderData, useParams } from "react-router-dom";
+import useDebouncedValue from "../hooks/useDebouncedValue";
 import { supabase } from "../supabaseClient";
 
-//React-icons
-import { FaRegTrashAlt, FaTimes } from "react-icons/fa";
-import { BiEdit } from "react-icons/bi";
-
-export const exercises = [
+const exercises = [
   { id: 1, name: "push ups", body_part: "chest" },
   { id: 2, name: "pull ups", body_part: "back" },
   { id: 3, name: "rows", body_part: "back" },
@@ -35,241 +24,44 @@ export const exercises = [
   { id: 18, name: "inclined push ups", body_part: "chest" },
 ];
 
-const exercisesPlaceholderData = [
-  { id: 1, name: "push ups", body_part: "chest" },
-  { id: 3, name: "rows", body_part: "back" },
-  { id: 17, name: "declined push ups", body_part: "chest" },
-  { id: 10, name: "bicep curls", body_part: "biceps" },
-  { id: 6, name: "squats", body_part: "legs" },
-];
-
-const setsPlaceholderData = [
-  {
-    exercise_id: 1,
-    set_id: 0,
-    reps: 12,
-    weight: 0,
-  },
-  {
-    exercise_id: 1,
-    set_id: 1,
-    reps: 12,
-    weight: 0,
-  },
-  {
-    exercise_id: 1,
-    set_id: 2,
-    reps: 12,
-    weight: 0,
-  },
-  {
-    exercise_id: 3,
-    set_id: 0,
-    reps: 10,
-    weight: 10,
-  },
-  {
-    exercise_id: 3,
-    set_id: 1,
-    reps: 10,
-    weight: 10,
-  },
-  {
-    exercise_id: 3,
-    set_id: 2,
-    reps: 10,
-    weight: 10,
-  },
-  {
-    exercise_id: 6,
-    set_id: 0,
-    reps: 18,
-    weight: 0,
-  },
-  {
-    exercise_id: 10,
-    set_id: 0,
-    reps: 12,
-    weight: 8,
-  },
-  {
-    exercise_id: 10,
-    set_id: 1,
-    reps: 12,
-    weight: 8,
-  },
-  {
-    exercise_id: 10,
-    set_id: 2,
-    reps: 2,
-    weight: 8,
-  },
-  {
-    exercise_id: 17,
-    set_id: 0,
-    reps: 8,
-    weight: 0,
-  },
-  {
-    exercise_id: 17,
-    set_id: 1,
-    reps: 8,
-    weight: 0,
-  },
-  {
-    exercise_id: 17,
-    set_id: 2,
-    reps: 8,
-    weight: 0,
-  },
-  {
-    exercise_id: 17,
-    set_id: 3,
-    reps: 8,
-    weight: 0,
-  },
-];
+function simulatedFetch(query) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(
+        exercises.filter((exercise) =>
+          exercise.name.toLowerCase().includes(query)
+        )
+      );
+    }, 1000);
+  });
+}
 
 const Workout = () => {
-  const workoutData = useLoaderData();
+  const [loaderData] = useLoaderData();
 
-  const { data, data2 } = workoutData;
-
-  const [loaderData] = data;
-
-  // interact with loaders and actions without causing navigation
-  const fetcher = useFetcher();
+  const [query, setQuery] = useState("");
+  const [queryResults, setQueryResults] = useState([]);
+  const debouncedQuery = useDebouncedValue(query);
 
   const [workout, setWorkout] = useState([]);
-  const [sets, setSets] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    if (data2.length === 0) return;
-    //remove exerciseIds duplicates
-    const [...exercisesIds] = new Set(data2.map((item) => item.exercise_id));
-
-    //get a list of this workout exercises based on the list of exercisesIds
-    const workoutExercises = exercises.filter((exercise) =>
-      exercisesIds.includes(exercise.id)
-    );
-
-    //set to state the actual workout fetched exercises
-    setWorkout(workoutExercises);
-    //set to state the actual workout fetched sets, reps, weight per exercise
-    setSets(data2);
-  }, []);
 
   const addExercise = (exercise) => {
-    const alreadyInWorkout = workout.find(
-      (workoutExercise) => workoutExercise.id === exercise.id
-    );
-
-    if (alreadyInWorkout) return alert("El ejercicio ya esta en la rutina");
-
     setWorkout([...workout, exercise]);
-    setSets(
-      [
-        ...sets,
-        { exercise_id: exercise.id, set_id: 0, reps: 0, weight: 0 },
-      ].sort((a, b) => a.exercise_id - b.exercise_id)
-    );
+    setQuery("");
+    setQueryResults([]);
   };
 
-  const deleteExercise = (id) => {
-    setWorkout(workout.filter((ex) => ex.id !== id));
-    setSets(sets.filter((set) => set.exercise_id !== id));
+  console.log(loaderData);
+
+  const fetchData = async () => {
+    const data = await simulatedFetch(debouncedQuery);
+    setQueryResults(data);
   };
 
-  const addSet = (id) => {
-    const exerciseSets = sets.filter((e) => e.exercise_id === id);
-
-    const {
-      exercise_id,
-      set_id: lastSetId,
-      reps: lastSetReps,
-      weight: lastSetWeight,
-    } = exerciseSets.at(-1);
-
-    const { name } = workout.find((ex) => ex.id === exercise_id);
-
-    if (lastSetReps !== 0) {
-      return setSets([
-        ...sets,
-        {
-          exercise_id,
-          set_id: lastSetId + 1,
-          reps: lastSetReps,
-          weight: lastSetWeight,
-        },
-      ]);
-    }
-
-    setSets(
-      [
-        ...sets,
-        { exercise_id, set_id: lastSetId + 1, reps: 0, weight: 0 },
-      ].sort((a, b) => a.exercise_id - b.exercise_id)
-    );
-  };
-
-  const deleteSet = (setToDelete) => {
-    const { exercise_id: setToDelete_exercise_id, set_id: setToDelete_id } =
-      setToDelete;
-
-    const setsCopy = [...sets];
-
-    const exercise_id_sets = sets
-      .filter(
-        (set) =>
-          set.exercise_id === setToDelete_exercise_id &&
-          set.set_id !== setToDelete_id
-      )
-      .map((set, idx) => ({ ...set, set_id: idx }));
-
-    const firstIndex = sets.findIndex(
-      (set) => set.exercise_id === setToDelete_exercise_id
-    );
-
-    setsCopy.splice(
-      firstIndex,
-      exercise_id_sets.length + 1,
-      ...exercise_id_sets
-    );
-
-    setSets([...setsCopy].sort((a, b) => a.exercise_id - b.exercise_id));
-  };
-
-  const handleSetChange = (e, set) => {
-    const { value, name: fieldName } = e.currentTarget;
-
-    const { exercise_id, set_id } = set;
-
-    setSets(
-      sets.map((set) => {
-        if (set.exercise_id === exercise_id && set.set_id === set_id) {
-          return { ...set, [fieldName]: Number(value) };
-        }
-        return set;
-      })
-    );
-  };
-
-  const handleWorkoutSave = () => {
-    const finalWorkout = sets.map((set) => {
-      return { workout_id: loaderData.id, ...set };
-    });
-
-    let formData = new FormData();
-
-    formData.append("finalWorkout", JSON.stringify(finalWorkout));
-    formData.append("intent", "save-workout");
-
-    fetcher.submit(formData, {
-      method: "post",
-      action: `/workouts/${loaderData.id}`,
-    });
-  };
+  useEffect(() => {
+    if (!debouncedQuery) return;
+    fetchData(debouncedQuery);
+  }, [debouncedQuery]);
 
   return (
     <div>
@@ -291,116 +83,45 @@ const Workout = () => {
         ) : null}
       </section>
 
-      <section className="mt-10 ">
-        <div className="flex items-center mb-4">
-          <h2 className="text-2xl font-bold">Exercises</h2>
+      <div className="bg-neutral-100 rounded-md mt-10 px-6 py-8">
+        <h2 className="text-2xl font-semibold mb-4">Nuevo ejercicio</h2>
 
-          <div className="flex gap-2 ml-auto">
-            {data2.length === 0 && workout.length !== 0 && (
-              <>
-                <fetcher.Form>
-                  <button
-                    type="button"
-                    name="intent"
-                    onClick={handleWorkoutSave}
-                    value="save-workout"
-                    className="bg-emerald-600 text-white px-4 py-2 rounded-lg"
-                  >
-                    Guardar entrenamiento
-                  </button>
-                </fetcher.Form>
-              </>
-            )}
-
-            {data2.length !== 0 && (
-              <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
-                <input
-                  type="text"
-                  value={loaderData.id}
-                  name="workout_id"
-                  hidden
-                  readOnly
-                />
-                <button
-                  type="submit"
-                  name="intent"
-                  value="delete-workout"
-                  className="bg-red-600 text-sm sm:text-base text-white p-2 flex items-center justify-center gap-2 md:px-4 md:py-2 rounded-lg"
-                >
-                  <FaRegTrashAlt className="w-4 h-4" />
-                  <span className="hidden md:block">
-                    {fetcher.state === "submiting" ||
-                    fetcher.state === "loading"
-                      ? "Eliminando..."
-                      : "Eliminar"}
-                  </span>
-                </button>
-              </fetcher.Form>
-            )}
-
-            {data2.length !== 0 && workout.length !== 0 && (
-              <>
-                <fetcher.Form
-                  method="post"
-                  action={`/workouts/${loaderData.id}`}
-                >
-                  <input
-                    type="text"
-                    value={loaderData.id}
-                    readOnly
-                    hidden
-                    name="workout_id"
-                  />
-                  <button
-                    type="submit"
-                    name="intent"
-                    value="edit-workout"
-                    className="bg-blue-600 text-white text-sm sm:text-base p-2 flex items-center justify-center gap-2 md:px-4 md:py-2 rounded-lg"
-                  >
-                    <BiEdit className="w-4 h-4" />
-                    <span className="hidden md:block">
-                      {fetcher.state === "submitting" ||
-                      fetcher.state === "loading"
-                        ? "Editando..."
-                        : "Editar"}{" "}
-                    </span>
-                  </button>
-                </fetcher.Form>
-              </>
-            )}
-          </div>
-
-          {data2.length === 0 ? (
-            <button
-              className="bg-emerald-600 text-white ml-2 px-4 py-2 rounded-lg"
-              onClick={() => setIsOpen((prev) => !prev)}
-            >
-              Agregar ejercicio
-            </button>
-          ) : null}
-        </div>
-
-        {isOpen ? (
-          <SearchExerciseInput
-            addExercise={addExercise}
-            setIsOpen={setIsOpen}
+        <div className="flex flex-col ">
+          <label htmlFor="" className="mb-1">
+            Nombre
+          </label>
+          <input
+            className="border-2 border-neutral-300 rounded-md h-10 p-2"
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.currentTarget.value.toLowerCase())}
           />
-        ) : null}
+        </div>
+        {queryResults.length !== 0 && (
+          <ul className="pt-6 flex flex-col gap-2">
+            {queryResults.length !== 0 && query ? (
+              queryResults.map((result) => (
+                <li>
+                  <button onClick={() => addExercise(result)}>
+                    {result.name}
+                  </button>
+                </li>
+              ))
+            ) : !debouncedQuery ? null : (
+              <li>No se encontraron coincidencias</li>
+            )}
+          </ul>
+        )}
+      </div>
 
-        <ul className="flex flex-col gap-2 mt-6">
+      <section className="mt-10">
+        <h2 className="text-2xl font-bold mb-4">Exercises</h2>
+
+        <ul className="flex flex-col gap-2">
           {workout.length !== 0
             ? workout.map((ex) => (
-                <li key={ex.id}>
-                  <WorkoutListExercise
-                    exerciseName={ex.name}
-                    addSet={addSet}
-                    handleSetChange={handleSetChange}
-                    deleteExercise={deleteExercise}
-                    deleteSet={deleteSet}
-                    sets={sets.filter((setEx) => setEx.exercise_id === ex.id)}
-                    // canEdit={data2.length === 0}
-                    canEdit={data2.length === 0}
-                  />
+                <li>
+                  <WorkoutListExercise name={ex.name} />
                 </li>
               ))
             : null}
@@ -410,189 +131,93 @@ const Workout = () => {
   );
 };
 
-function WorkoutListExercise({
-  exerciseName,
-  addSet,
-  handleSetChange,
-  deleteExercise,
-  deleteSet,
-  sets,
-  canEdit,
-}) {
-  const exercise_id = sets.at(0).exercise_id;
+function WorkoutListExercise({ name }) {
+  const [sets, setSets] = useState([{ id: 0, reps: 0, weight: 0 }]);
 
-  const handleDelete = () => deleteExercise(exercise_id);
+  const handleChange = (e, id) => {
+    const { value, name: fieldName } = e.currentTarget;
+
+    setSets(
+      sets.map((set) => {
+        return set.id === id ? { ...set, [fieldName]: value } : set;
+      })
+    );
+  };
+
+  const addSet = () => {
+    const setId = sets.length;
+    const { reps: lastSetReps, weight: lastSetWeight } = sets.at(-1);
+
+    if (lastSetReps !== 0) {
+      return setSets([
+        ...sets,
+        { id: setId, reps: lastSetReps, weight: lastSetWeight },
+      ]);
+    }
+
+    setSets([...sets, { id: setId, reps: 0, weight: 0 }]);
+  };
 
   return (
     <div className=" border-2 border-neutral-200 p-4 rounded-md">
-      <p>{exerciseName}</p>
+      <p>{name}</p>
 
       {sets.map((set, idx) => {
         return (
-          <div className="flex flex-col mt-2" key={set.set_id}>
-            <div className="flex w-ful">
+          <div className="flex flex-col " key={idx}>
+            <div className="flex w-full">
               <span className="w-10 h-10 flex-none grid place-content-center">
-                {set.set_id + 1}
+                1
               </span>
 
               <div className="flex gap-2 items-center w-full justify-center">
                 <label htmlFor="">reps</label>
-                {canEdit ? (
-                  <input
-                    type="number"
-                    name="reps"
-                    value={set.reps}
-                    onChange={(e) => handleSetChange(e, set)}
-                    className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
-                  />
-                ) : (
-                  <span className="bg-neutral-200 rounded-md w-10 h-8 grid place-items-center text-sm">
-                    {set.reps}
-                  </span>
-                )}
+                <input
+                  type="text"
+                  name="reps"
+                  value={set.reps}
+                  onChange={(e) => handleChange(e, idx)}
+                  className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
+                />
               </div>
 
               <div className="flex gap-2 items-center w-full justify-center">
                 <label htmlFor="">weight</label>
-                {canEdit ? (
-                  <input
-                    type="number"
-                    name="weight"
-                    value={set.weight}
-                    onChange={(e) => handleSetChange(e, set)}
-                    className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
-                  />
-                ) : (
-                  <span className="bg-neutral-200 rounded-md w-10 h-8 grid place-items-center text-sm">
-                    {set.weight}
-                  </span>
-                )}
-                <span className="text-sm text-neutral-200">Kg</span>
-              </div>
-              <div className="h-10 w-10 flex-none ">
-                {sets.length > 1 && (
-                  <button
-                    onClick={() => deleteSet(set)}
-                    className="h-10 w-10 grid flex-none rounded-md place-items-center hover:bg-red-100"
-                  >
-                    <FaTimes className="text-red-400" />
-                  </button>
-                )}
+                <input
+                  type="text"
+                  name="weight"
+                  value={set.weight}
+                  onChange={(e) => handleChange(e, idx)}
+                  className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
+                />
               </div>
             </div>
           </div>
         );
       })}
 
-      {canEdit && (
-        <>
-          <button
-            onClick={() => addSet(exercise_id)}
-            className="place-self-start px-4 py-2 mt-4 bg-neutral-200 rounded-md"
-          >
-            agregar serie
-          </button>
-
-          <button
-            onClick={handleDelete}
-            className="bg-red-300 px-4 py-2 mt-4 ml-2 rounded-md text-red-900"
-          >
-            eliminar ejercicio
-          </button>
-        </>
-      )}
+      <button
+        onClick={addSet}
+        className="place-self-start px-4 py-2 mt-4 bg-neutral-200 rounded-md"
+      >
+        agregar serie
+      </button>
     </div>
   );
 }
 
-export async function action({ request }) {
-  let formData = Object.fromEntries(await request.formData());
+//   const isOk = true;
 
-  const { intent } = formData;
-
-  console.log("action intent: " + intent);
-
-  if (intent === "save-workout") {
-    const { finalWorkout } = formData;
-    const parsedWorkout = JSON.parse(finalWorkout);
-
-    try {
-      const { error, data } = await supabase
-        .from("workouts_exercises")
-        .insert(parsedWorkout)
-        .select("*");
-
-      console.log("saving...");
-      console.log(data);
-
-      if (error) throw error;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  if (intent === "edit-workout") {
-    const { workout_id } = formData;
-
-    await new Promise((resolve, reject) => {
-      setTimeout(() => {
-        console.log("edting...");
-        console.log("The workout id is: " + workout_id);
-        resolve();
-      }, 3000);
-    });
-  }
-
-  if (intent === "delete-workout") {
-    const { workout_id } = formData;
-    console.log("deleting...");
-    try {
-      const { error, data } = await supabase
-        .from("workouts")
-        .delete()
-        .eq("id", workout_id)
-        .select();
-
-      if (error) throw error;
-
-      return redirect("/");
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  return null;
-}
-
-export async function loader({ params }) {
-  // console.log(params.id);
-  try {
-    const { error, data } = await supabase
-      .from("workouts")
-      .select("*")
-      .eq("id", params.id);
-
-    const { error: error2, data: data2 } = await supabase
-      .from("workouts_exercises")
-      .select("*")
-      .eq("workout_id", params.id);
-
-    // const { error, data } = await supabase
-    // .from("workouts_exercises")
-    // .select("")
-    // .eq("id", params.id);
-
-    if (data.length === 0) throw new Response("Not Found", { status: 404 });
-
-    if (error || error2) throw error;
-
-    return { data, data2 };
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export default Workout;
+// simulated fetch
+// async function getWorkout(id) {
+//   console.log(id);
+//   return new Promise((resolve, reject) => {
+//     if (isOk) {
+//       resolve(id);
+//     }
+//     reject("error");
+//   });
+// }
 
 // const pushExercises = async () => {
 //   try {
@@ -612,3 +237,29 @@ export default Workout;
 //     console.log(error);
 //   }
 // };
+
+export async function loader({ params }) {
+  console.log(params.id);
+  // try {
+  //   const { error, data } = await supabase
+  //     .from("workouts")
+  //     .select("*")
+  //     .eq("id", params.id);
+
+  //   if (error) throw error;
+
+  //   return data;
+  // } catch (error) {
+  //   console.log(error);
+  // }
+
+  return [
+    {
+      created_at: "2023-01-20T12:16:23.947648+00:00",
+      id: 12,
+      name: "Entrenamiento tiron",
+    },
+  ];
+}
+
+export default Workout;
