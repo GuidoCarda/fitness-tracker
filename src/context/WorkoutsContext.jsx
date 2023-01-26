@@ -6,7 +6,7 @@ export const WorkoutsContext = createContext();
 export const WorkoutsProvider = ({ children }) => {
   const [workouts, setWorkouts] = useState([]);
 
-  console.log(workouts);
+  // console.log(workouts);
 
   const randomId = () => {
     return Math.floor(Math.random() * 10000000);
