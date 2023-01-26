@@ -12,7 +12,10 @@ import Home, {
   createAction as createWorkout,
   deleteAction as deleteWorkouts,
 } from "./pages/Home";
-import { loader as workoutLoader } from "./pages/Workout";
+import {
+  loader as workoutLoader,
+  action as workoutActions,
+} from "./pages/Workout";
 import ErrorPage from "./pages/Error";
 
 function App() {
@@ -29,6 +32,7 @@ function App() {
           path="workouts/:id"
           element={<Workout />}
           loader={workoutLoader}
+          action={workoutActions}
         />
         <Route path="workouts/delete" action={deleteWorkouts} />
       </Route>
