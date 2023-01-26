@@ -11,7 +11,7 @@ import SearchExerciseInput from "../components/SearchExerciseInput";
 import { supabase } from "../supabaseClient";
 
 //React-icons
-import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegTrashAlt, FaTimes } from "react-icons/fa";
 import { BiEdit } from "react-icons/bi";
 
 export const exercises = [
@@ -35,6 +35,101 @@ export const exercises = [
   { id: 18, name: "inclined push ups", body_part: "chest" },
 ];
 
+const exercisesPlaceholderData = [
+  { id: 1, name: "push ups", body_part: "chest" },
+  { id: 3, name: "rows", body_part: "back" },
+  { id: 17, name: "declined push ups", body_part: "chest" },
+  { id: 10, name: "bicep curls", body_part: "biceps" },
+  { id: 6, name: "squats", body_part: "legs" },
+];
+
+const setsPlaceholderData = [
+  {
+    exercise_id: 1,
+    set_id: 0,
+    reps: 12,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 1,
+    reps: 12,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 2,
+    reps: 12,
+    weight: 0,
+  },
+  {
+    exercise_id: 3,
+    set_id: 0,
+    reps: 10,
+    weight: 10,
+  },
+  {
+    exercise_id: 3,
+    set_id: 1,
+    reps: 10,
+    weight: 10,
+  },
+  {
+    exercise_id: 3,
+    set_id: 2,
+    reps: 10,
+    weight: 10,
+  },
+  {
+    exercise_id: 6,
+    set_id: 0,
+    reps: 18,
+    weight: 0,
+  },
+  {
+    exercise_id: 10,
+    set_id: 0,
+    reps: 12,
+    weight: 8,
+  },
+  {
+    exercise_id: 10,
+    set_id: 1,
+    reps: 12,
+    weight: 8,
+  },
+  {
+    exercise_id: 10,
+    set_id: 2,
+    reps: 2,
+    weight: 8,
+  },
+  {
+    exercise_id: 17,
+    set_id: 0,
+    reps: 8,
+    weight: 0,
+  },
+  {
+    exercise_id: 17,
+    set_id: 1,
+    reps: 8,
+    weight: 0,
+  },
+  {
+    exercise_id: 17,
+    set_id: 2,
+    reps: 8,
+    weight: 0,
+  },
+  {
+    exercise_id: 17,
+    set_id: 3,
+    reps: 8,
+    weight: 0,
+  },
+];
+
 const Workout = () => {
   const workoutData = useLoaderData();
 
@@ -48,8 +143,6 @@ const Workout = () => {
   const [workout, setWorkout] = useState([]);
   const [sets, setSets] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-
-  console.log(sets);
 
   useEffect(() => {
     if (data2.length === 0) return;
@@ -75,10 +168,12 @@ const Workout = () => {
     if (alreadyInWorkout) return alert("El ejercicio ya esta en la rutina");
 
     setWorkout([...workout, exercise]);
-    setSets([
-      ...sets,
-      { exercise_id: exercise.id, set_id: 0, reps: 0, weight: 0 },
-    ]);
+    setSets(
+      [
+        ...sets,
+        { exercise_id: exercise.id, set_id: 0, reps: 0, weight: 0 },
+      ].sort((a, b) => a.exercise_id - b.exercise_id)
+    );
   };
 
   const deleteExercise = (id) => {
@@ -98,8 +193,6 @@ const Workout = () => {
 
     const { name } = workout.find((ex) => ex.id === exercise_id);
 
-    console.log(name, lastSetReps, lastSetWeight);
-
     if (lastSetReps !== 0) {
       return setSets([
         ...sets,
@@ -112,34 +205,27 @@ const Workout = () => {
       ]);
     }
 
-    setSets([
-      ...sets,
-      { exercise_id, set_id: lastSetId + 1, reps: 0, weight: 0 },
-    ]);
+    setSets(
+      [
+        ...sets,
+        { exercise_id, set_id: lastSetId + 1, reps: 0, weight: 0 },
+      ].sort((a, b) => a.exercise_id - b.exercise_id)
+    );
   };
 
   const deleteSet = (setToDelete) => {
-    console.log(setToDelete);
     const { exercise_id: setToDelete_exercise_id, set_id: setToDelete_id } =
       setToDelete;
 
-    console.log(setToDelete_exercise_id, setToDelete_id);
-
-    // const filteredSets = sets.filter((set) => {
-    //   if (set.exercise_id !== setToDelete_exercise_id) return true;
-
-    //   if (set.set_id !== setToDelete_id) return true;
-    // });
-
-    // I need a way of setting the set_id start to 0 and on every iteration increment it by 1
-
     const setsCopy = [...sets];
 
-    const exercise_id_sets = sets.filter(
-      (set) =>
-        set.exercise_id === setToDelete_exercise_id &&
-        set.set_id !== setToDelete_id
-    );
+    const exercise_id_sets = sets
+      .filter(
+        (set) =>
+          set.exercise_id === setToDelete_exercise_id &&
+          set.set_id !== setToDelete_id
+      )
+      .map((set, idx) => ({ ...set, set_id: idx }));
 
     const firstIndex = sets.findIndex(
       (set) => set.exercise_id === setToDelete_exercise_id
@@ -151,12 +237,7 @@ const Workout = () => {
       ...exercise_id_sets
     );
 
-    //console.log(test);
-    console.log(setsCopy);
-
-    // console.log(filteredSets.map((set, idx) => ({ ...set, set_id: idx })));
-
-    setSets([...setsCopy]);
+    setSets([...setsCopy].sort((a, b) => a.exercise_id - b.exercise_id));
   };
 
   const handleSetChange = (e, set) => {
@@ -189,11 +270,6 @@ const Workout = () => {
       action: `/workouts/${loaderData.id}`,
     });
   };
-
-  // console.log("LoaderData");
-  // console.log(loaderData);
-  // console.log("data 2");
-  // console.log(data2);
 
   return (
     <div>
@@ -343,7 +419,6 @@ function WorkoutListExercise({
   sets,
   canEdit,
 }) {
-  console.log(sets);
   const exercise_id = sets.at(0).exercise_id;
 
   const handleDelete = () => deleteExercise(exercise_id);
@@ -354,8 +429,8 @@ function WorkoutListExercise({
 
       {sets.map((set, idx) => {
         return (
-          <div className="flex flex-col " key={set.set_id}>
-            <div className="flex w-full">
+          <div className="flex flex-col mt-2" key={set.set_id}>
+            <div className="flex w-ful">
               <span className="w-10 h-10 flex-none grid place-content-center">
                 {set.set_id + 1}
               </span>
@@ -394,12 +469,16 @@ function WorkoutListExercise({
                 )}
                 <span className="text-sm text-neutral-200">Kg</span>
               </div>
-              <button
-                onClick={() => deleteSet(set)}
-                className="h-10 w-10 grid flex-none rounded-md place-items-center bg-neutral-300"
-              >
-                x
-              </button>
+              <div className="h-10 w-10 flex-none ">
+                {sets.length > 1 && (
+                  <button
+                    onClick={() => deleteSet(set)}
+                    className="h-10 w-10 grid flex-none rounded-md place-items-center hover:bg-red-100"
+                  >
+                    <FaTimes className="text-red-400" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         );
