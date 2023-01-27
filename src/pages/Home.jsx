@@ -8,7 +8,6 @@ import {
   useFetcher,
   useLoaderData,
   useNavigation,
-  useSubmit,
 } from "react-router-dom";
 import { WorkoutsContext } from "../context/WorkoutsContext";
 import { supabase } from "../supabaseClient";
@@ -25,15 +24,6 @@ const Home = () => {
 
   const loaderData = useLoaderData();
   const fetcher = useFetcher();
-  let submit = useSubmit();
-
-  // const deleteWorkoutTest = () => {
-  //   console.log(data);
-  //   submit(data, {
-  //     method: "delete",
-  //     action: `/workouts/${data.id}/delete`,
-  //   });
-  // };
 
   return (
     <div>
@@ -92,7 +82,7 @@ const Home = () => {
                     className="h-10 w-10 bg-neutral-500 rounded-md grid place-content-center"
                   >
                     x
-                  </button>
+                </button>
                 </fetcher.Form> */}
               </li>
             ))

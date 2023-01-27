@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { useEffect } from "react";
 
 //Routing
-import { Link, redirect, useFetcher, useLoaderData } from "react-router-dom";
+import {
+  Link,
+  redirect,
+  useFetcher,
+  useLoaderData,
+} from "react-router-dom";
 
 //Components
 import SearchExerciseInput from "../components/SearchExerciseInput";
@@ -11,124 +16,10 @@ import SearchExerciseInput from "../components/SearchExerciseInput";
 import { supabase } from "../supabaseClient";
 
 //React-icons
-import { FaRegTrashAlt, FaTimes } from "react-icons/fa";
+import { FaRegTrashAlt } from "react-icons/fa";
 import { BiEdit } from "react-icons/bi";
-
-export const exercises = [
-  { id: 1, name: "push ups", body_part: "chest" },
-  { id: 2, name: "pull ups", body_part: "back" },
-  { id: 3, name: "rows", body_part: "back" },
-  { id: 4, name: "bench press", body_part: "chest" },
-  { id: 5, name: "shoulder press", body_part: "shoulders" },
-  { id: 6, name: "squats", body_part: "legs" },
-  { id: 7, name: "front squats", body_part: "legs" },
-  { id: 8, name: "back squats", body_part: "legs" },
-  { id: 9, name: "flor press", body_part: "chest" },
-  { id: 10, name: "bicep curls", body_part: "biceps" },
-  { id: 11, name: "tricep extensions", body_part: "triceps" },
-  { id: 12, name: "tricep pushdown", body_part: "triceps" },
-  { id: 13, name: "lat pulldown", body_part: "back" },
-  { id: 14, name: "weighted rows", body_part: "back" },
-  { id: 15, name: "barbell rows", body_part: "back" },
-  { id: 16, name: "dumbell rows", body_part: "back" },
-  { id: 17, name: "declined push ups", body_part: "chest" },
-  { id: 18, name: "inclined push ups", body_part: "chest" },
-];
-
-const exercisesPlaceholderData = [
-  { id: 1, name: "push ups", body_part: "chest" },
-  { id: 3, name: "rows", body_part: "back" },
-  { id: 17, name: "declined push ups", body_part: "chest" },
-  { id: 10, name: "bicep curls", body_part: "biceps" },
-  { id: 6, name: "squats", body_part: "legs" },
-];
-
-const setsPlaceholderData = [
-  {
-    exercise_id: 1,
-    set_id: 0,
-    reps: 12,
-    weight: 0,
-  },
-  {
-    exercise_id: 1,
-    set_id: 1,
-    reps: 12,
-    weight: 0,
-  },
-  {
-    exercise_id: 1,
-    set_id: 2,
-    reps: 12,
-    weight: 0,
-  },
-  {
-    exercise_id: 3,
-    set_id: 0,
-    reps: 10,
-    weight: 10,
-  },
-  {
-    exercise_id: 3,
-    set_id: 1,
-    reps: 10,
-    weight: 10,
-  },
-  {
-    exercise_id: 3,
-    set_id: 2,
-    reps: 10,
-    weight: 10,
-  },
-  {
-    exercise_id: 6,
-    set_id: 0,
-    reps: 18,
-    weight: 0,
-  },
-  {
-    exercise_id: 10,
-    set_id: 0,
-    reps: 12,
-    weight: 8,
-  },
-  {
-    exercise_id: 10,
-    set_id: 1,
-    reps: 12,
-    weight: 8,
-  },
-  {
-    exercise_id: 10,
-    set_id: 2,
-    reps: 2,
-    weight: 8,
-  },
-  {
-    exercise_id: 17,
-    set_id: 0,
-    reps: 8,
-    weight: 0,
-  },
-  {
-    exercise_id: 17,
-    set_id: 1,
-    reps: 8,
-    weight: 0,
-  },
-  {
-    exercise_id: 17,
-    set_id: 2,
-    reps: 8,
-    weight: 0,
-  },
-  {
-    exercise_id: 17,
-    set_id: 3,
-    reps: 8,
-    weight: 0,
-  },
-];
+import WorkoutListExercise from "../components/WorkoutListExercise";
+import { exercises } from "../exercices";
 
 const Workout = () => {
   const workoutData = useLoaderData();
@@ -147,7 +38,9 @@ const Workout = () => {
   useEffect(() => {
     if (data2.length === 0) return;
     //remove exerciseIds duplicates
-    const [...exercisesIds] = new Set(data2.map((item) => item.exercise_id));
+    const [...exercisesIds] = new Set(
+      data2.map((item) => item.exercise_id)
+    );
 
     //get a list of this workout exercises based on the list of exercisesIds
     const workoutExercises = exercises.filter((exercise) =>
@@ -165,7 +58,8 @@ const Workout = () => {
       (workoutExercise) => workoutExercise.id === exercise.id
     );
 
-    if (alreadyInWorkout) return alert("El ejercicio ya esta en la rutina");
+    if (alreadyInWorkout)
+      return alert("El ejercicio ya esta en la rutina");
 
     setWorkout([...workout, exercise]);
     setSets(
@@ -214,8 +108,10 @@ const Workout = () => {
   };
 
   const deleteSet = (setToDelete) => {
-    const { exercise_id: setToDelete_exercise_id, set_id: setToDelete_id } =
-      setToDelete;
+    const {
+      exercise_id: setToDelete_exercise_id,
+      set_id: setToDelete_id,
+    } = setToDelete;
 
     const setsCopy = [...sets];
 
@@ -237,7 +133,9 @@ const Workout = () => {
       ...exercise_id_sets
     );
 
-    setSets([...setsCopy].sort((a, b) => a.exercise_id - b.exercise_id));
+    setSets(
+      [...setsCopy].sort((a, b) => a.exercise_id - b.exercise_id)
+    );
   };
 
   const handleSetChange = (e, set) => {
@@ -247,7 +145,10 @@ const Workout = () => {
 
     setSets(
       sets.map((set) => {
-        if (set.exercise_id === exercise_id && set.set_id === set_id) {
+        if (
+          set.exercise_id === exercise_id &&
+          set.set_id === set_id
+        ) {
           return { ...set, [fieldName]: Number(value) };
         }
         return set;
@@ -295,6 +196,7 @@ const Workout = () => {
         <div className="flex items-center mb-4">
           <h2 className="text-2xl font-bold">Exercises</h2>
 
+          {/* Action buttons - Add Exercise. Save, delete & edit workout */}
           <div className="flex gap-2 ml-auto">
             {data2.length === 0 && workout.length !== 0 && (
               <>
@@ -313,7 +215,10 @@ const Workout = () => {
             )}
 
             {data2.length !== 0 && (
-              <fetcher.Form method="post" action={`/workouts/${loaderData.id}`}>
+              <fetcher.Form
+                method="post"
+                action={`/workouts/${loaderData.id}`}
+              >
                 <input
                   type="text"
                   value={loaderData.id}
@@ -380,12 +285,12 @@ const Workout = () => {
           ) : null}
         </div>
 
-        {isOpen ? (
+        {isOpen && (
           <SearchExerciseInput
             addExercise={addExercise}
             setIsOpen={setIsOpen}
           />
-        ) : null}
+        )}
 
         <ul className="flex flex-col gap-2 mt-6">
           {workout.length !== 0
@@ -397,8 +302,9 @@ const Workout = () => {
                     handleSetChange={handleSetChange}
                     deleteExercise={deleteExercise}
                     deleteSet={deleteSet}
-                    sets={sets.filter((setEx) => setEx.exercise_id === ex.id)}
-                    // canEdit={data2.length === 0}
+                    sets={sets.filter(
+                      (setEx) => setEx.exercise_id === ex.id
+                    )}
                     canEdit={data2.length === 0}
                   />
                 </li>
@@ -410,101 +316,6 @@ const Workout = () => {
   );
 };
 
-function WorkoutListExercise({
-  exerciseName,
-  addSet,
-  handleSetChange,
-  deleteExercise,
-  deleteSet,
-  sets,
-  canEdit,
-}) {
-  const exercise_id = sets.at(0).exercise_id;
-
-  const handleDelete = () => deleteExercise(exercise_id);
-
-  return (
-    <div className=" border-2 border-neutral-200 p-4 rounded-md">
-      <p>{exerciseName}</p>
-
-      {sets.map((set, idx) => {
-        return (
-          <div className="flex flex-col mt-2" key={set.set_id}>
-            <div className="flex w-ful">
-              <span className="w-10 h-10 flex-none grid place-content-center">
-                {set.set_id + 1}
-              </span>
-
-              <div className="flex gap-2 items-center w-full justify-center">
-                <label htmlFor="">reps</label>
-                {canEdit ? (
-                  <input
-                    type="number"
-                    name="reps"
-                    value={set.reps}
-                    onChange={(e) => handleSetChange(e, set)}
-                    className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
-                  />
-                ) : (
-                  <span className="bg-neutral-200 rounded-md w-10 h-8 grid place-items-center text-sm">
-                    {set.reps}
-                  </span>
-                )}
-              </div>
-
-              <div className="flex gap-2 items-center w-full justify-center">
-                <label htmlFor="">weight</label>
-                {canEdit ? (
-                  <input
-                    type="number"
-                    name="weight"
-                    value={set.weight}
-                    onChange={(e) => handleSetChange(e, set)}
-                    className="bg-neutral-200 rounded-md w-10 h-8 grid text-center text-sm"
-                  />
-                ) : (
-                  <span className="bg-neutral-200 rounded-md w-10 h-8 grid place-items-center text-sm">
-                    {set.weight}
-                  </span>
-                )}
-                <span className="text-sm text-neutral-200">Kg</span>
-              </div>
-              <div className="h-10 w-10 flex-none ">
-                {sets.length > 1 && (
-                  <button
-                    onClick={() => deleteSet(set)}
-                    className="h-10 w-10 grid flex-none rounded-md place-items-center hover:bg-red-100"
-                  >
-                    <FaTimes className="text-red-400" />
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-      })}
-
-      {canEdit && (
-        <>
-          <button
-            onClick={() => addSet(exercise_id)}
-            className="place-self-start px-4 py-2 mt-4 bg-neutral-200 rounded-md"
-          >
-            agregar serie
-          </button>
-
-          <button
-            onClick={handleDelete}
-            className="bg-red-300 px-4 py-2 mt-4 ml-2 rounded-md text-red-900"
-          >
-            eliminar ejercicio
-          </button>
-        </>
-      )}
-    </div>
-  );
-}
-
 export async function action({ request }) {
   let formData = Object.fromEntries(await request.formData());
 
@@ -515,6 +326,12 @@ export async function action({ request }) {
   if (intent === "save-workout") {
     const { finalWorkout } = formData;
     const parsedWorkout = JSON.parse(finalWorkout);
+
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve();
+      }, 2000);
+    });
 
     try {
       const { error, data } = await supabase
@@ -582,7 +399,8 @@ export async function loader({ params }) {
     // .select("")
     // .eq("id", params.id);
 
-    if (data.length === 0) throw new Response("Not Found", { status: 404 });
+    if (data.length === 0)
+      throw new Response("Not Found", { status: 404 });
 
     if (error || error2) throw error;
 
@@ -593,22 +411,3 @@ export async function loader({ params }) {
 }
 
 export default Workout;
-
-// const pushExercises = async () => {
-//   try {
-//     exercises.forEach(async (value) => {
-//       const { error, data } = await supabase
-//         .from("exercises")
-//         .insert({
-//           name: value.name,
-//           body_part: value.body_part,
-//         })
-//         .select("*");
-
-//       if (error) throw error;
-//       console.log(data);
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
