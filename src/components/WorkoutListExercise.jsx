@@ -1,3 +1,5 @@
+import { FaTimes } from "react-icons/fa";
+
 function WorkoutListExercise({
   exerciseName,
   addSet,

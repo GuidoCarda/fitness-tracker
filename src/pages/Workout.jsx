@@ -31,6 +31,13 @@ const Workout = () => {
   // interact with loaders and actions without causing navigation
   const fetcher = useFetcher();
 
+  console.log(fetcher.state);
+
+  const isSaving =
+    fetcher.state === "submitting" || fetcher.state === "loading";
+
+  console.log("isSaving: " + isSaving);
+
   const [workout, setWorkout] = useState([]);
   const [sets, setSets] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -206,9 +213,10 @@ const Workout = () => {
                     name="intent"
                     onClick={handleWorkoutSave}
                     value="save-workout"
-                    className="bg-emerald-600 text-white px-4 py-2 rounded-lg"
+                    disabled={isSaving}
+                    className="bg-emerald-600 text-white px-4 py-2 rounded-lg disabled:bg-emerald-400"
                   >
-                    Guardar entrenamiento
+                    {isSaving ? "Guardando" : "Guardar Entrenamiento"}
                   </button>
                 </fetcher.Form>
               </>
@@ -275,7 +283,7 @@ const Workout = () => {
             )}
           </div>
 
-          {data2.length === 0 ? (
+          {data2.length === 0 && !isSaving ? (
             <button
               className="bg-emerald-600 text-white ml-2 px-4 py-2 rounded-lg"
               onClick={() => setIsOpen((prev) => !prev)}
@@ -305,7 +313,7 @@ const Workout = () => {
                     sets={sets.filter(
                       (setEx) => setEx.exercise_id === ex.id
                     )}
-                    canEdit={data2.length === 0}
+                    canEdit={data2.length === 0 && !isSaving}
                   />
                 </li>
               ))

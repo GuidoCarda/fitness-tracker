@@ -24,11 +24,17 @@ const Home = () => {
 
   const loaderData = useLoaderData();
   const fetcher = useFetcher();
+  const navigation = useNavigation();
+
+  console.log("Navigation state -> " + navigation.state);
+  console.log("Fetcher state -> " + fetcher.state);
 
   return (
     <div>
       <div className="flex items-center justify-between font">
-        <h1 className=" text-2xl md:text-4xl font-bold ">Entrenamientos</h1>
+        <h1 className=" text-2xl md:text-4xl font-bold ">
+          Entrenamientos
+        </h1>
 
         <button
           className="bg-emerald-600 text-white text-sm sm:text-base px-2 py-1 sm:px-4 sm:py-2 rounded-lg"
@@ -53,7 +59,10 @@ const Home = () => {
               method="delete"
               action={`/workouts/delete`}
             >
-              <button className=" bg-red-300/70 border-2 text-sm sm:text-base border-red-300 text-red-800 px-2 py-1 sm:px-4 sm:py-2  rounded-lg font-bold">
+              <button
+                disabled={navigation.state === "submitting"}
+                className=" bg-red-300/70 border-2 text-sm sm:text-base border-red-300 text-red-800 px-2 py-1 sm:px-4 sm:py-2  rounded-lg font-bold disabled:bg-neutral-200 disabled:border-neutral-300 disabled:text-neutral-300"
+              >
                 Eliminar todos
               </button>
             </fetcher.Form>
@@ -72,18 +81,6 @@ const Home = () => {
                 >
                   {workout.name}
                 </Link>
-
-                {/* <fetcher.Form
-                  method="delete"
-                  action={`/workouts/delete`}
-                >
-                  <button
-                    type="submit"
-                    className="h-10 w-10 bg-neutral-500 rounded-md grid place-content-center"
-                  >
-                    x
-                </button>
-                </fetcher.Form> */}
               </li>
             ))
           ) : (
@@ -106,7 +103,7 @@ export async function loader() {
 
     if (error) throw error;
 
-    console.log(data);
+    // console.log(data);
 
     return data;
   } catch (error) {
@@ -115,6 +112,8 @@ export async function loader() {
 }
 
 export async function createAction({ request }) {
+  console.log("Accion con Form/Navigation");
+
   let formValue = Object.fromEntries(await request.formData());
 
   try {
@@ -142,6 +141,8 @@ export async function createAction({ request }) {
 }
 
 export async function deleteAction({ params }) {
+  console.log("Accion con fetcher.Form/fetcher");
+
   try {
     const { error, data } = await supabase
       .from("workouts")
@@ -161,7 +162,8 @@ function WorkoutInput() {
   const navigation = useNavigation();
 
   const busy =
-    navigation.state === "submitting" || navigation.state === "loading";
+    navigation.state === "submitting" ||
+    navigation.state === "loading";
 
   return (
     <>
@@ -170,7 +172,9 @@ function WorkoutInput() {
         action="/"
         className="bg-neutral-100 px-6 py-8 flex flex-col mt-6 rounded-md"
       >
-        <h2 className="text-2xl font-semibold mb-4">Nuevo Entrenamiento</h2>
+        <h2 className="text-2xl font-semibold mb-4">
+          Nuevo Entrenamiento
+        </h2>
 
         <div className="flex flex-col">
           <label htmlFor="" className="mb-1">
