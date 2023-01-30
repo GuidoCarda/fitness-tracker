@@ -42,6 +42,9 @@ const Home = () => {
         >
           Nuevo Entrenamiento
         </button>
+        <Link className="test-neutral-500" to="/dashboard">
+          Dashboard
+        </Link>
       </div>
 
       {newWorkout && (
