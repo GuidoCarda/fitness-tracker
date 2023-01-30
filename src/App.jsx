@@ -19,6 +19,7 @@ import {
 import ErrorPage from "./pages/Error";
 import ProtectedRoutes from "./pages/ProtectedRoutes";
 import Dashboard, { Profile, Settings } from "./pages/Dashboard";
+import LogIn from "./pages/LogIn";
 
 function App() {
   const router = createBrowserRouter(
@@ -41,6 +42,7 @@ function App() {
           action={workoutActions}
         />
         <Route path="workouts/delete" action={deleteWorkouts} />
+        <Route path="login" element={<LogIn />} />
         <Route path={"dashboard"} element={<ProtectedRoutes />}>
           <Route index element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
