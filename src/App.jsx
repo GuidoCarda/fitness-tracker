@@ -17,11 +17,17 @@ import {
   action as workoutActions,
 } from "./pages/Workout";
 import ErrorPage from "./pages/Error";
+import ProtectedRoutes from "./pages/ProtectedRoutes";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path="/" element={<RootLayout />} errorElement={<ErrorPage />}>
+      <Route
+        path="/"
+        element={<RootLayout />}
+        errorElement={<ErrorPage />}
+      >
         <Route
           path="/"
           element={<Home />}
@@ -35,6 +41,9 @@ function App() {
           action={workoutActions}
         />
         <Route path="workouts/delete" action={deleteWorkouts} />
+        <Route path={"dashboard"} element={<ProtectedRoutes />}>
+          <Route index element={<Dashboard />} />
+        </Route>
       </Route>
     )
   );
