@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Outlet, Navigate, NavLink, Link } from "react-router-dom";
-import { AuthContext } from "../context/AuthProvider";
+import useAuth from "../hooks/useAuth";
 import Unauthorized from "./Unauthorized";
 
 const ProtectedRoutes = () => {
-  const { isAuth, logout } = useContext(AuthContext);
+  const { isAuth, logout } = useAuth();
 
   // if (!isAuth) return <Unauthorized />;
 

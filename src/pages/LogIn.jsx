@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link, Form, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthProvider";
+import useAuth from "../hooks/useAuth";
 
 const LogIn = () => {
-  const { login } = useContext(AuthContext);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = () => {
