@@ -1,9 +1,24 @@
-import React from "react";
-import { Link, Form } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, Form, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthProvider";
 
 const LogIn = () => {
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    login();
+    navigate("/dashboard");
+  };
+
   return (
-    <div>
+    <div className="border-2 border-black min-h-full">
+      <Link
+        to="/"
+        className="block mb-6 text-neutral-500 hover:text-black "
+      >
+        Volver al inicio
+      </Link>
       <Form className="max-w-md mx-auto bg-neutral-100 rounded-md px-4 py-8">
         <fieldset className="mb-4 flex flex-col gap-2">
           <label htmlFor="username">Username</label>
@@ -23,13 +38,22 @@ const LogIn = () => {
           />
         </fieldset>
 
-        <button className="block">Log In</button>
-        <span className="text-center block w-full border-2 border-black">
-          Did you forget your password?
-        </span>
-        <Link className="block" to="/">
-          reset password
-        </Link>
+        <button
+          type="button"
+          onClick={handleLogin}
+          className="block w-full my-4 outline:none h-12 rounded-md bg-emerald-700 text-white"
+        >
+          Log In
+        </button>
+        <div className="flex items-center flex-col">
+          <span className="">Did you forget your password?</span>
+          <Link
+            className="text-sm text-emerald-600 hover:underline"
+            to="/"
+          >
+            reset password
+          </Link>
+        </div>
       </Form>
     </div>
   );

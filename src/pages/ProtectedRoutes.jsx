@@ -1,28 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Outlet, Navigate, NavLink, Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthProvider";
+import Unauthorized from "./Unauthorized";
 
 const ProtectedRoutes = () => {
-  const isAuth = false;
+  const { isAuth, logout } = useContext(AuthContext);
+
+  // if (!isAuth) return <Unauthorized />;
 
   if (!isAuth) return <Navigate to="/login" />;
-
-  // if (!isAuth) {
-  //   return (
-  //     <div>
-  //       <div className="max-w-xl mx-auto text-center flex flex-col items-center">
-  //         <h2 className="text-2xl font-bold text-neutral-800">
-  //           Lo sentimos, no tiene los permisos necesarios
-  //         </h2>
-  //         <Link
-  //           className="mt-6 mx-auto bg-neutral-400 rounded-md px-4 py-1"
-  //           to="/"
-  //         >
-  //           Volver al inicio
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div>
@@ -47,6 +33,13 @@ const ProtectedRoutes = () => {
         >
           Settings
         </NavLink>{" "}
+        <button
+          onClick={logout}
+          type="button"
+          className="ml-4 text-neutral-500 hover:text-black"
+        >
+          logout
+        </button>{" "}
       </nav>
       <Outlet />
     </div>
