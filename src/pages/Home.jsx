@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useState, useContext } from "react";
 
 //Routing
@@ -45,13 +46,16 @@ const Home = () => {
       </div>
 
       {newWorkout && (
-        <WorkoutInput
-          createWorkout={createWorkout}
-          handleToggle={toggleNewWorkout}
-        />
+        <AnimatePresence>
+          <WorkoutInput
+            key="new"
+            createWorkout={createWorkout}
+            handleToggle={toggleNewWorkout}
+          />
+        </AnimatePresence>
       )}
 
-      <section>
+      <motion.section layout>
         <div className="flex mt-10">
           {loaderData.length !== 0 ? (
             <fetcher.Form
@@ -87,7 +91,7 @@ const Home = () => {
             <li>Aun no hay entrenamientos disponibles</li>
           )}
         </ul>
-      </section>
+      </motion.section>
     </div>
   );
 };
@@ -157,7 +161,7 @@ export async function deleteAction({ params }) {
   }
 }
 
-function WorkoutInput() {
+function WorkoutInput({ key }) {
   const [name, setName] = useState("");
   const navigation = useNavigation();
 
@@ -166,7 +170,12 @@ function WorkoutInput() {
     navigation.state === "loading";
 
   return (
-    <>
+    <motion.div
+      key={key}
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -100 }}
+    >
       <Form
         method="post"
         action="/"
@@ -198,6 +207,6 @@ function WorkoutInput() {
           {busy ? "Creando" : "Crear"}
         </button>
       </Form>
-    </>
+    </motion.div>
   );
 }
