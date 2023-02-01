@@ -20,6 +20,7 @@ import ErrorPage from "./pages/Error";
 import ProtectedRoutes from "./pages/ProtectedRoutes";
 import Dashboard, { Profile, Settings } from "./pages/Dashboard";
 import LogIn from "./pages/LogIn";
+import { AnimatePresence } from "framer-motion";
 
 function App() {
   const router = createBrowserRouter(
