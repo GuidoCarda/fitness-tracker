@@ -17,7 +17,9 @@ import {
   action as workoutActions,
 } from "./pages/Workout";
 import ErrorPage from "./pages/Error";
-import { AnimatePresence } from "framer-motion";
+import ProtectedRoutes from "./pages/ProtectedRoutes";
+import Dashboard, { Profile, Settings } from "./pages/Dashboard";
+import LogIn from "./pages/LogIn";
 
 function App() {
   const router = createBrowserRouter(
@@ -40,6 +42,12 @@ function App() {
           action={workoutActions}
         />
         <Route path="workouts/delete" action={deleteWorkouts} />
+        <Route path="login" element={<LogIn />} />
+        <Route path={"dashboard"} element={<ProtectedRoutes />}>
+          <Route index element={<Dashboard />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
       </Route>
     )
   );
