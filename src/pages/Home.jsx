@@ -31,7 +31,11 @@ const Home = () => {
   console.log("Fetcher state -> " + fetcher.state);
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <div className="flex items-center justify-between font">
         <h1 className=" text-2xl md:text-4xl font-bold ">
           Entrenamientos
@@ -45,15 +49,14 @@ const Home = () => {
         </button>
       </div>
 
-      {newWorkout && (
-        <AnimatePresence>
+      <AnimatePresence>
+        {newWorkout && (
           <WorkoutInput
-            key="new"
             createWorkout={createWorkout}
             handleToggle={toggleNewWorkout}
           />
-        </AnimatePresence>
-      )}
+        )}
+      </AnimatePresence>
 
       <motion.section layout>
         <div className="flex mt-10">
@@ -72,6 +75,7 @@ const Home = () => {
             </fetcher.Form>
           ) : null}
         </div>
+
         <ul className="flex flex-col gap-4 mt-4">
           {loaderData.length !== 0 ? (
             loaderData.map((workout, idx) => (
@@ -92,7 +96,7 @@ const Home = () => {
           )}
         </ul>
       </motion.section>
-    </div>
+    </motion.div>
   );
 };
 
@@ -161,7 +165,7 @@ export async function deleteAction({ params }) {
   }
 }
 
-function WorkoutInput({ key }) {
+function WorkoutInput() {
   const [name, setName] = useState("");
   const navigation = useNavigation();
 
@@ -171,10 +175,11 @@ function WorkoutInput({ key }) {
 
   return (
     <motion.div
-      key={key}
+      key="new"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -100 }}
+      exit={{ opacity: 0, y: -10 }}
+      // transition={{ duration: 1 }}
     >
       <Form
         method="post"

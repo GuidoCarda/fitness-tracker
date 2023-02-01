@@ -17,11 +17,16 @@ import {
   action as workoutActions,
 } from "./pages/Workout";
 import ErrorPage from "./pages/Error";
+import { AnimatePresence } from "framer-motion";
 
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path="/" element={<RootLayout />} errorElement={<ErrorPage />}>
+      <Route
+        path="/"
+        element={<RootLayout />}
+        errorElement={<ErrorPage />}
+      >
         <Route
           path="/"
           element={<Home />}
@@ -39,6 +44,12 @@ function App() {
     )
   );
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <AnimatePresence mode="wait">
+        <RouterProvider router={router} />
+      </AnimatePresence>
+    </>
+  );
 }
 export default App;
