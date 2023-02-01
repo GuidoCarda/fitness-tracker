@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useState, useContext } from "react";
 
 //Routing
@@ -30,7 +31,11 @@ const Home = () => {
   console.log("Fetcher state -> " + fetcher.state);
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <div className="flex items-center justify-between font">
         <h1 className=" text-2xl md:text-4xl font-bold ">
           Entrenamientos
@@ -44,14 +49,16 @@ const Home = () => {
         </button>
       </div>
 
-      {newWorkout && (
-        <WorkoutInput
-          createWorkout={createWorkout}
-          handleToggle={toggleNewWorkout}
-        />
-      )}
+      <AnimatePresence>
+        {newWorkout && (
+          <WorkoutInput
+            createWorkout={createWorkout}
+            handleToggle={toggleNewWorkout}
+          />
+        )}
+      </AnimatePresence>
 
-      <section>
+      <motion.section layout>
         <div className="flex mt-10">
           {loaderData.length !== 0 ? (
             <fetcher.Form
@@ -68,6 +75,7 @@ const Home = () => {
             </fetcher.Form>
           ) : null}
         </div>
+
         <ul className="flex flex-col gap-4 mt-4">
           {loaderData.length !== 0 ? (
             loaderData.map((workout, idx) => (
@@ -87,8 +95,8 @@ const Home = () => {
             <li>Aun no hay entrenamientos disponibles</li>
           )}
         </ul>
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 };
 
@@ -166,7 +174,13 @@ function WorkoutInput() {
     navigation.state === "loading";
 
   return (
-    <>
+    <motion.div
+      key="new"
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      // transition={{ duration: 1 }}
+    >
       <Form
         method="post"
         action="/"
@@ -198,6 +212,6 @@ function WorkoutInput() {
           {busy ? "Creando" : "Crear"}
         </button>
       </Form>
-    </>
+    </motion.div>
   );
 }
