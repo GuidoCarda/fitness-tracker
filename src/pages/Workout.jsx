@@ -1,6 +1,9 @@
 import React, { useState, useTransition } from "react";
 import { useEffect } from "react";
 
+//UI Animations
+import { motion } from "framer-motion";
+
 //Routing
 import {
   Link,
@@ -180,7 +183,11 @@ const Workout = () => {
   };
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <div className="flex items-center justify-between">
         <h1 className="text-4xl font-bold">Workout</h1>
         <Link to="/" className="bg-neutral-300 px-4 py-2 rounded-md">
@@ -320,7 +327,7 @@ const Workout = () => {
             : null}
         </ul>
       </section>
-    </div>
+    </motion.div>
   );
 };
 
