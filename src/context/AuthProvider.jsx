@@ -5,11 +5,14 @@ export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [isAuth, setIsAuth] = useState(false);
+  const [user, setUser] = useState({});
 
-  const login = () => {
+  const login = (user) => {
     console.log("login...");
     setIsAuth(true);
-    redirect("/dashboard");
+    setUser(user);
+    console.log(user);
+    // redirect("/dashboard");
   };
 
   const logout = () => {
@@ -19,7 +22,7 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuth, login, logout }}>
+    <AuthContext.Provider value={{ isAuth, login, logout, user }}>
       {children}
     </AuthContext.Provider>
   );

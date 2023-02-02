@@ -17,9 +17,12 @@ import {
   action as workoutActions,
 } from "./pages/Workout";
 import ErrorPage from "./pages/Error";
-import ProtectedRoutes from "./pages/ProtectedRoutes";
+import ProtectedRoutes, {
+  loader as authLoader,
+} from "./pages/ProtectedRoutes";
 import Dashboard, { Profile, Settings } from "./pages/Dashboard";
-import LogIn from "./pages/LogIn";
+import LogIn, { action as loginAction } from "./pages/LogIn";
+
 import { AnimatePresence } from "framer-motion";
 
 function App() {
@@ -43,8 +46,16 @@ function App() {
           action={workoutActions}
         />
         <Route path="workouts/delete" action={deleteWorkouts} />
-        <Route path="login" element={<LogIn />} />
-        <Route path={"dashboard"} element={<ProtectedRoutes />}>
+        <Route
+          path="login"
+          element={<LogIn />}
+          // action={loginAction}
+        />
+        <Route
+          path={"dashboard"}
+          loader={authLoader}
+          element={<ProtectedRoutes />}
+        >
           <Route index element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />

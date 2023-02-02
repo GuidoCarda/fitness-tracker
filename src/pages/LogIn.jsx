@@ -1,7 +1,7 @@
 import React from "react";
 
 //Routing
-import { Link, Form, useNavigate } from "react-router-dom";
+import { Link, Form, useNavigate, redirect } from "react-router-dom";
 
 //Auth
 import useAuth from "../hooks/useAuth";
@@ -27,11 +27,12 @@ const LogIn = () => {
       if (error) throw error;
 
       console.log(data);
+      login({ data });
     } catch (error) {
       console.log(error);
     }
 
-    login();
+    // console.log("se ejecuta")
     navigate("/dashboard");
   };
 
@@ -50,7 +51,11 @@ const LogIn = () => {
         <BiLeftArrowAlt className="h-6 w-6" />
         Volver al inicio
       </Link>
-      <Form className="w-96 mx-auto bg-neutral-100 rounded-md px-4 py-8">
+      <Form
+        method="post"
+        action="/login"
+        className="w-96 mx-auto bg-neutral-100 rounded-md px-4 py-8"
+      >
         <fieldset className="mb-4 flex flex-col gap-2">
           <label htmlFor="username">Username</label>
           <input
@@ -72,6 +77,9 @@ const LogIn = () => {
         <button
           type="button"
           onClick={handleLogin}
+          // type="submit"
+          name="intent"
+          value="login"
           className="block w-full my-4 outline:none h-12 rounded-md bg-emerald-700 text-white"
         >
           Log In
@@ -92,7 +100,12 @@ const LogIn = () => {
 
 export default LogIn;
 
-export async function action() {
+export async function action({ request }) {
+  console.log("entro");
+  const formValues = Object.fromEntries(await request.formData());
+
+  console.log(formValues);
+
   try {
     const { data, error } = await supabase.auth.signUp({
       email: "test@email.com",
@@ -101,11 +114,9 @@ export async function action() {
 
     if (error) throw error;
 
+    return redirect("/dashboard");
     console.log(data);
   } catch (error) {
     console.log(error);
   }
-
-  login();
-  navigate("/dashboard");
 }

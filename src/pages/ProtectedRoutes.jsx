@@ -5,6 +5,7 @@ import {
   NavLink,
   Link,
   useLocation,
+  useLoaderData,
 } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
@@ -12,10 +13,18 @@ import useAuth from "../hooks/useAuth";
 import { motion } from "framer-motion";
 
 import Unauthorized from "./Unauthorized";
+import { supabase } from "../supabaseClient";
 
 const ProtectedRoutes = () => {
+  const data = useLoaderData();
+  const { isAuth, logout, login, user } = useAuth();
+
+  if (!isAuth && data) {
+    login(data);
+  }
+
+  console.log(`loaderData  ->`, data);
   const location = useLocation();
-  const { isAuth, logout } = useAuth();
 
   // if (!isAuth) return <Unauthorized />;
 
@@ -66,3 +75,20 @@ const ProtectedRoutes = () => {
 };
 
 export default ProtectedRoutes;
+
+export async function action({ request }) {}
+
+export async function loader({ params }) {
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: "test@email.com",
+      password: "example-password",
+    });
+    if (error) throw error;
+
+    console.log("data in loader: " + data);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
