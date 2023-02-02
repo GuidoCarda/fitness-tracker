@@ -11,12 +11,26 @@ import { motion } from "framer-motion";
 
 //Icons
 import { BiLeftArrowAlt } from "react-icons/bi";
+import { supabase } from "../supabaseClient";
 
 const LogIn = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: "test@email.com",
+        password: "example-password",
+      });
+
+      if (error) throw error;
+
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+
     login();
     navigate("/dashboard");
   };
@@ -77,3 +91,21 @@ const LogIn = () => {
 };
 
 export default LogIn;
+
+export async function action() {
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email: "test@email.com",
+      password: "example-password",
+    });
+
+    if (error) throw error;
+
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+
+  login();
+  navigate("/dashboard");
+}

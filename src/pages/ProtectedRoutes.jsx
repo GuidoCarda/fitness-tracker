@@ -1,17 +1,36 @@
 import React from "react";
-import { Outlet, Navigate, NavLink, Link } from "react-router-dom";
+import {
+  Outlet,
+  Navigate,
+  NavLink,
+  Link,
+  useLocation,
+} from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+
+//Ui animations
+import { motion } from "framer-motion";
+
 import Unauthorized from "./Unauthorized";
 
 const ProtectedRoutes = () => {
+  const location = useLocation();
   const { isAuth, logout } = useAuth();
 
   // if (!isAuth) return <Unauthorized />;
 
-  if (!isAuth) return <Navigate to="/login" />;
+  if (!isAuth)
+    return (
+      <Navigate to="/login" state={{ from: location }} replace />
+    );
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1 }}
+    >
       <nav className="h-14 flex items-center">
         {" "}
         <span>Logo</span>{" "}
@@ -42,7 +61,7 @@ const ProtectedRoutes = () => {
         </button>{" "}
       </nav>
       <Outlet />
-    </div>
+    </motion.div>
   );
 };
 
