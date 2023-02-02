@@ -1,6 +1,16 @@
 import React from "react";
+
+//Routing
 import { Link, Form, useNavigate } from "react-router-dom";
+
+//Auth
 import useAuth from "../hooks/useAuth";
+
+//Ui animations
+import { motion } from "framer-motion";
+
+//Icons
+import { BiLeftArrowAlt } from "react-icons/bi";
 
 const LogIn = () => {
   const { login } = useAuth();
@@ -12,14 +22,21 @@ const LogIn = () => {
   };
 
   return (
-    <div className="border-2 border-black min-h-full">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1 }}
+      className="absolute inset-0 bg-white border-2 border-black/5 h-screen grid place-content-center"
+    >
       <Link
         to="/"
-        className="block mb-6 text-neutral-500 hover:text-black "
+        className="absolute flex items-center gap-2 left-20 top-20 text-neutral-500 hover:text-black bg-neutral-100 py-2 px-4 rounded-md transition-colors"
       >
+        <BiLeftArrowAlt className="h-6 w-6" />
         Volver al inicio
       </Link>
-      <Form className="max-w-md mx-auto bg-neutral-100 rounded-md px-4 py-8">
+      <Form className="w-96 mx-auto bg-neutral-100 rounded-md px-4 py-8">
         <fieldset className="mb-4 flex flex-col gap-2">
           <label htmlFor="username">Username</label>
           <input
@@ -55,7 +72,7 @@ const LogIn = () => {
           </Link>
         </div>
       </Form>
-    </div>
+    </motion.div>
   );
 };
 
