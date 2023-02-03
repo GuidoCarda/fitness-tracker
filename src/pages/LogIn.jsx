@@ -75,14 +75,36 @@ const LogIn = () => {
         </fieldset>
 
         <button
-          type="button"
-          onClick={handleLogin}
-          // type="submit"
+          // type="button"
+          // onClick={handleLogin}
+          type="submit"
           name="intent"
-          value="login"
+          value="signup"
           className="block w-full my-4 outline:none h-12 rounded-md bg-emerald-700 text-white"
         >
-          Log In
+          Sign Up
+        </button>
+
+        <button
+          // type="button"
+          // onClick={handleLogin}
+          type="submit"
+          name="intent"
+          value="signin"
+          className="block w-full my-4 outline:none h-12 rounded-md bg-red-700 text-white"
+        >
+          Sign in
+        </button>
+
+        <button
+          // type="button"
+          // onClick={handleLogin}
+          type="submit"
+          name="intent"
+          value="logout"
+          className="block w-full my-4 outline:none h-12 rounded-md bg-blue-700 text-white"
+        >
+          Log Out
         </button>
         <div className="flex items-center flex-col">
           <span className="">Did you forget your password?</span>
@@ -102,21 +124,61 @@ export default LogIn;
 
 export async function action({ request }) {
   console.log("entro");
-  const formValues = Object.fromEntries(await request.formData());
+  const { intent, ...formValues } = Object.fromEntries(
+    await request.formData()
+  );
 
   console.log(formValues);
+  console.log(intent);
 
-  try {
-    const { data, error } = await supabase.auth.signUp({
-      email: "test@email.com",
-      password: "example-password",
-    });
+  if (intent === "signup") {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: "test@email.com",
+        password: "example-password",
+      });
 
-    if (error) throw error;
+      if (error) throw error;
 
-    return redirect("/dashboard");
-    console.log(data);
-  } catch (error) {
-    console.log(error);
+      // return redirect("/dashboard");
+      console.log(data);
+
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  if (intent === "signin") {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: "test@email.com",
+        password: "example-password",
+      });
+
+      if (error) throw error;
+
+      // return redirect("/dashboard");
+      console.log(data);
+
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  if (intent === "logout") {
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) throw error;
+
+      // return redirect("/dashboard");
+      console.log("logged out...");
+
+      return error;
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

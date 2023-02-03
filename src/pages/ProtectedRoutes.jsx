@@ -19,9 +19,9 @@ const ProtectedRoutes = () => {
   const data = useLoaderData();
   const { isAuth, logout, login, user } = useAuth();
 
-  if (!isAuth && data) {
-    login(data);
-  }
+  // if (!isAuth && data) {
+  //   login(data);
+  // }
 
   console.log(`loaderData  ->`, data);
   const location = useLocation();
@@ -80,13 +80,15 @@ export async function action({ request }) {}
 
 export async function loader({ params }) {
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: "test@email.com",
-      password: "example-password",
-    });
+    const { data, error } = await supabase.auth.getSession();
+
+    // const { data, error } = await supabase.auth.signInWithPassword({
+    //   email: "test@email.com",
+    //   password: "example-password",
+    // });
     if (error) throw error;
 
-    console.log("data in loader: " + data);
+    console.log("data in loader: ", data);
     return data;
   } catch (error) {
     console.log(error);
