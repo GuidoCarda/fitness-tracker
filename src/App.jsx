@@ -25,7 +25,7 @@ import ProtectedRoutes, {
 import Dashboard, { Profile, Settings } from "./pages/Dashboard";
 import LogIn, { action as loginAction } from "./pages/LogIn";
 
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 function App() {
   const router = createBrowserRouter(
@@ -83,16 +83,26 @@ export default App;
 
 function TestPage() {
   return (
-    <div className="">
-      <div className="py-32  bg-slate-200 rounded-lg text-center">
-        <h1 className="text-3xl font-bold">Fitness tracker</h1>
-        <p>Esta es una app destinada a trackear tus entrenamientos</p>
-        <Link
-          to="/home"
-          className="block w-max mx-auto mt-6 bg-slate-600 text-white py-2 px-6 rounded-md"
-        >
-          Iniciar sesion
-        </Link>
+    <motion.div
+      className=""
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-slate-200  text-center bg-[url('assets/hero.png')] bg-[center_top_-6rem] bg-no-repeat overflow-hidden rounded-2xl ">
+        <div className="py-40 bg-black/50  text-white backdrop-blur-sm">
+          <h1 className="text-3xl font-bold">Fitness tracker</h1>
+          <p>
+            Esta es una app destinada a trackear tus entrenamientos
+          </p>
+          <Link
+            to="/home"
+            className="block w-max mx-auto mt-6 bg-slate-600 text-white py-2 px-6 rounded-md"
+          >
+            Iniciar sesion
+          </Link>
+        </div>
       </div>
 
       <section className="py-20 text-center">
@@ -129,6 +139,6 @@ function TestPage() {
           iusto, optio sit.
         </p>
       </section>
-    </div>
+    </motion.div>
   );
 }

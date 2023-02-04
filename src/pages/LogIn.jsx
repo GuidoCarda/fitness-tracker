@@ -41,12 +41,12 @@ const LogIn = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 1 }}
-      className="absolute inset-0 bg-white border-2 border-black/5 h-screen grid place-content-center"
+      transition={{ duration: 0.5 }}
+      className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-indigo-800 order-2 border-black/5 h-screen grid place-content-center"
     >
       <Link
         to="/"
-        className="absolute flex items-center gap-2 left-20 top-20 text-neutral-500 hover:text-black bg-neutral-100 py-2 px-4 rounded-md transition-colors"
+        className="absolute flex items-center gap-2 left-20 top-20 text-white/70 hover:text-white hover:bg-white/20 bg-white/10 py-2 px-4 rounded-md transition-colors"
       >
         <BiLeftArrowAlt className="h-6 w-6" />
         Volver al inicio
@@ -54,9 +54,12 @@ const LogIn = () => {
       <Form
         method="post"
         action="/login"
-        className="w-96 mx-auto bg-neutral-100 rounded-md px-4 py-8"
+        className="w-96 mx-auto bg-neutral-100  rounded-md px-4 py-8"
       >
-        <fieldset className="mb-4 flex flex-col gap-2">
+        <h2 className="text-2xl font-bold text-center mb-10">
+          Log In
+        </h2>
+        <fieldset className="mb-3 flex flex-col gap-2">
           <label htmlFor="username">Username</label>
           <input
             type="text"
@@ -80,7 +83,7 @@ const LogIn = () => {
           type="submit"
           name="intent"
           value="signup"
-          className="block w-full my-4 outline:none h-12 rounded-md bg-emerald-700 text-white"
+          className="block w-full my-4 outline:none h-12 rounded-md bg-emerald-500 text-white"
         >
           Sign Up
         </button>
@@ -91,7 +94,7 @@ const LogIn = () => {
           type="submit"
           name="intent"
           value="signin"
-          className="block w-full my-4 outline:none h-12 rounded-md bg-red-700 text-white"
+          className="block w-full my-4 outline:none h-12 rounded-md bg-red-500 text-white"
         >
           Sign in
         </button>
@@ -102,7 +105,7 @@ const LogIn = () => {
           type="submit"
           name="intent"
           value="logout"
-          className="block w-full my-4 outline:none h-12 rounded-md bg-blue-700 text-white"
+          className="block w-full my-4 outline:none h-12 rounded-md bg-blue-500 text-white"
         >
           Log Out
         </button>

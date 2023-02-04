@@ -40,7 +40,7 @@ const ProtectedRoutes = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 1 }}
+      transition={{ duration: 0.5 }}
     >
       <nav className="h-14 flex items-center">
         {" "}
