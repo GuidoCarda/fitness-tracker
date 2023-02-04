@@ -161,24 +161,11 @@ export async function action({ request }) {
       // return redirect("/dashboard");
       console.log(data);
 
-      return data;
+      return redirect("/home");
     } catch (error) {
       console.log(error);
     }
   }
 
-  if (intent === "logout") {
-    try {
-      const { error } = await supabase.auth.signOut();
-
-      if (error) throw error;
-
-      // return redirect("/dashboard");
-      console.log("logged out...");
-
-      return error;
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  return null;
 }

@@ -2,6 +2,7 @@ import "./App.css";
 import {
   createBrowserRouter,
   createRoutesFromElements,
+  Link,
   Route,
   RouterProvider,
 } from "react-router-dom";
@@ -19,6 +20,7 @@ import {
 import ErrorPage from "./pages/Error";
 import ProtectedRoutes, {
   loader as authLoader,
+  action as authAction,
 } from "./pages/ProtectedRoutes";
 import Dashboard, { Profile, Settings } from "./pages/Dashboard";
 import LogIn, { action as loginAction } from "./pages/LogIn";
@@ -40,8 +42,9 @@ function App() {
           action={loginAction}
         />
         <Route
-          path={"/"}
-          // loader={authLoader}
+          path={"home"}
+          loader={authLoader}
+          action={authAction}
           element={<ProtectedRoutes />}
         >
           <Route
@@ -84,9 +87,12 @@ function TestPage() {
       <div className="py-32  bg-slate-200 rounded-lg text-center">
         <h1 className="text-3xl font-bold">Fitness tracker</h1>
         <p>Esta es una app destinada a trackear tus entrenamientos</p>
-        <button className="mt-6 bg-slate-600 text-white py-2 px-6 rounded-md">
+        <Link
+          to="/home"
+          className="block w-max mx-auto mt-6 bg-slate-600 text-white py-2 px-6 rounded-md"
+        >
           Iniciar sesion
-        </button>
+        </Link>
       </div>
 
       <section className="py-20 text-center">
