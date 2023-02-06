@@ -47,18 +47,18 @@ const ProtectedRoutes = () => {
         <span>Logo</span>{" "}
         <NavLink
           className="ml-auto text-neutral-500 hover:text-black"
-          to="/"
+          to="/dogui"
         >
           Home
         </NavLink>{" "}
         <NavLink
-          to="profile"
+          to="dashboard/profile"
           className="ml-4 text-neutral-500 hover:text-black"
         >
           Profile
         </NavLink>{" "}
         <NavLink
-          to="settings"
+          to="dashboard/settings"
           className="ml-4 text-neutral-500 hover:text-black"
         >
           Settings

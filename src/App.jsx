@@ -35,14 +35,14 @@ function App() {
         element={<RootLayout />}
         errorElement={<ErrorPage />}
       >
-        <Route index path="/" element={<TestPage />} />
+        <Route index element={<LandingPage />} />
         <Route
           path="login"
           element={<LogIn />}
           action={loginAction}
         />
         <Route
-          path={"home"}
+          path={":id"}
           loader={authLoader}
           action={authAction}
           element={<ProtectedRoutes />}
@@ -54,13 +54,12 @@ function App() {
             action={createWorkout}
           />
           <Route
-            path="workouts/:id"
+            path="workouts:id"
             element={<Workout />}
             loader={workoutLoader}
             action={workoutActions}
           />
-          <Route path="workouts/delete" action={deleteWorkouts} />
-
+          <Route path="delete" action={deleteWorkouts} />
           <Route path="dashboard">
             <Route index element={<Dashboard />} />
             <Route path="profile" element={<Profile />} />
@@ -81,7 +80,7 @@ function App() {
 }
 export default App;
 
-function TestPage() {
+function LandingPage() {
   return (
     <motion.div
       className=""
@@ -96,12 +95,20 @@ function TestPage() {
           <p>
             Esta es una app destinada a trackear tus entrenamientos
           </p>
-          <Link
-            to="/home"
-            className="block w-max mx-auto mt-6 bg-slate-600 text-white py-2 px-6 rounded-md"
-          >
-            Iniciar sesion
-          </Link>
+          <div className="flex justify-center gap-4 mt-4">
+            <Link
+              to="/:id"
+              className="block w-max bg-black/20 backdrop-blur-xs text-white py-2 px-6 rounded-md"
+            >
+              Iniciar sesion
+            </Link>
+            <Link
+              to="/:id"
+              className="block w-max bg-emerald-500 text-black py-2 px-6 rounded-md"
+            >
+              Crear Cuenta
+            </Link>
+          </div>
         </div>
       </div>
 
