@@ -127,13 +127,9 @@ const LogIn = () => {
 export default LogIn;
 
 export async function action({ request }) {
-  console.log("entro");
   const { intent, ...formValues } = Object.fromEntries(
     await request.formData()
   );
-
-  console.log(formValues);
-  console.log(intent);
 
   if (intent === "signup") {
     const data = await authService.signUp();
@@ -145,9 +141,6 @@ export async function action({ request }) {
       });
 
       if (error) throw error;
-
-      // return redirect("/dashboard");
-      console.log(data);
 
       return data;
     } catch (error) {
@@ -164,10 +157,7 @@ export async function action({ request }) {
 
       if (error) throw error;
 
-      // return redirect("/dashboard");
-      console.log(data);
-
-      return redirect("/home");
+      return redirect("/workouts");
     } catch (error) {
       console.log(error);
     }

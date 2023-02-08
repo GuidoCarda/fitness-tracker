@@ -1,8 +1,8 @@
-const signUp = async () => {
+const signUp = async ({ email, password }) => {
   try {
     const { data, error } = await supabase.auth.signUp({
-      email: "test@email.com",
-      password: "example-password",
+      email,
+      password,
     });
 
     if (error) throw error;
@@ -13,11 +13,11 @@ const signUp = async () => {
   }
 };
 
-const logIn = async () => {
+const logIn = async ({ email, password }) => {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: "test@email.com",
-      password: "example-password",
+      email,
+      password,
     });
 
     if (error) throw error;

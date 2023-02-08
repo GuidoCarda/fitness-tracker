@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Outlet,
   Navigate,
@@ -14,19 +14,14 @@ import useAuth from "../hooks/useAuth";
 //Ui animations
 import { motion } from "framer-motion";
 
-import Unauthorized from "./Unauthorized";
 import { supabase } from "../supabaseClient";
+import authService from "../services/authService";
 
 const ProtectedRoutes = () => {
-  const { isAuth, logout, login, user } = useAuth();
   const data = useLoaderData();
   const location = useLocation();
 
   console.log(`loaderData  ->`, data);
-
-  if (data.session) {
-    login(data.session);
-  }
 
   if (!data.session)
     return (
@@ -45,7 +40,7 @@ const ProtectedRoutes = () => {
         <span>Logo</span>{" "}
         <NavLink
           className="ml-auto text-neutral-500 hover:text-black"
-          to="/dogui"
+          to="/workouts"
         >
           Home
         </NavLink>{" "}
@@ -106,6 +101,7 @@ export async function action({ request }) {
 }
 
 export async function loader({ params }) {
+  console.log("se ejecuto el loader");
   try {
     const { data, error } = await supabase.auth.getSession();
 
@@ -115,7 +111,7 @@ export async function loader({ params }) {
     // });
     if (error) throw error;
 
-    console.log("data in loader: ", data);
+    // console.log("data in loader: ", data);
     return data;
   } catch (error) {
     console.log(error);

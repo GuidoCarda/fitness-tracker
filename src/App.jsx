@@ -42,7 +42,7 @@ function App() {
           action={loginAction}
         />
         <Route
-          path={":id"}
+          path={"workouts"}
           element={<ProtectedRoutes />}
           loader={authLoader}
         >
@@ -53,7 +53,7 @@ function App() {
             action={createWorkout}
           />
           <Route
-            path="workouts:id"
+            path=":id"
             element={<Workout />}
             loader={workoutLoader}
             action={workoutActions}
@@ -96,13 +96,13 @@ function LandingPage() {
           </p>
           <div className="flex justify-center gap-4 mt-4">
             <Link
-              to="/:id"
+              to="workouts"
               className="block w-max bg-black/20 backdrop-blur-xs text-white py-2 px-6 rounded-md"
             >
               Iniciar sesion
             </Link>
             <Link
-              to="/:id"
+              to="workouts"
               className="block w-max bg-emerald-500 text-black py-2 px-6 rounded-md"
             >
               Crear Cuenta
