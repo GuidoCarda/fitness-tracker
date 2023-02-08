@@ -12,7 +12,6 @@ const AuthProvider = ({ children }) => {
     setIsAuth(true);
     setUser(user);
     console.log(user);
-    // redirect("/dashboard");
   };
 
   const logout = () => {
@@ -21,8 +20,23 @@ const AuthProvider = ({ children }) => {
     redirect("/");
   };
 
+  const getSession = async () => {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw error;
+
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const signUp = async () => {};
+
   return (
-    <AuthContext.Provider value={{ isAuth, login, logout, user }}>
+    <AuthContext.Provider
+      value={{ isAuth, login, logout, user, getSession }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -18,17 +18,15 @@ import Unauthorized from "./Unauthorized";
 import { supabase } from "../supabaseClient";
 
 const ProtectedRoutes = () => {
+  const { isAuth, logout, login, user } = useAuth();
   const data = useLoaderData();
-  // const { isAuth, logout, login, user } = useAuth();
-
-  // if (!isAuth && data) {
-  //   login(data);
-  // }
-
-  console.log(`loaderData  ->`, data);
   const location = useLocation();
 
-  // if (!isAuth) return <Unauthorized />;
+  console.log(`loaderData  ->`, data);
+
+  if (data.session) {
+    login(data.session);
+  }
 
   if (!data.session)
     return (
@@ -63,7 +61,7 @@ const ProtectedRoutes = () => {
         >
           Settings
         </NavLink>{" "}
-        <Form method="post" action="/home">
+        <Form method="post" action="/login">
           <button
             type="submit"
             name="intent"

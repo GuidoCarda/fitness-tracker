@@ -43,9 +43,8 @@ function App() {
         />
         <Route
           path={":id"}
-          loader={authLoader}
-          action={authAction}
           element={<ProtectedRoutes />}
+          loader={authLoader}
         >
           <Route
             index
