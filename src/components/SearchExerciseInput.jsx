@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { exercises } from "../exercices";
 import useDebouncedValue from "../hooks/useDebouncedValue";
-import { exercises } from "../Pages/workout";
 
 const SearchExerciseInput = ({ addExercise, setIsOpen }) => {
   const [query, setQuery] = useState("");
@@ -50,7 +50,9 @@ const SearchExerciseInput = ({ addExercise, setIsOpen }) => {
           className="border-2 border-neutral-300 rounded-md h-10 p-2"
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.currentTarget.value.toLowerCase())}
+          onChange={(e) =>
+            setQuery(e.currentTarget.value.toLowerCase())
+          }
         />
 
         {queryResults.length !== 0 && (

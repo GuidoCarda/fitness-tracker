@@ -1,34 +1,115 @@
-const exercisesList = [
-  {
-    name: "push ups",
-    type: "bodyweight",
-    bodyparts: ["chest", "triceps", "shoulders"],
-  },
-  {
-    name: "rows",
-    type: "bodyweight",
-    bodyparts: ["back", "biceps"],
-  },
-  {
-    name: "shoulder press",
-    type: "weights",
-    bodyparts: ["shoulder", "triceps"],
-  },
-  {
-    name: "squats",
-    type: "bodyweight",
-    bodyparts: ["legs"],
-  },
-  {
-    name: "weighted squats",
-    type: "weights",
-    bodyparts: ["legs"],
-  },
-  {
-    name: "tricep extentions",
-    type: "weights",
-    bodyparts: ["triceps"],
-  },
+export const exercises = [
+  { id: 1, name: "push ups", body_part: "chest" },
+  { id: 2, name: "pull ups", body_part: "back" },
+  { id: 3, name: "rows", body_part: "back" },
+  { id: 4, name: "bench press", body_part: "chest" },
+  { id: 5, name: "shoulder press", body_part: "shoulders" },
+  { id: 6, name: "squats", body_part: "legs" },
+  { id: 7, name: "front squats", body_part: "legs" },
+  { id: 8, name: "back squats", body_part: "legs" },
+  { id: 9, name: "flor press", body_part: "chest" },
+  { id: 10, name: "bicep curls", body_part: "biceps" },
+  { id: 11, name: "tricep extensions", body_part: "triceps" },
+  { id: 12, name: "tricep pushdown", body_part: "triceps" },
+  { id: 13, name: "lat pulldown", body_part: "back" },
+  { id: 14, name: "weighted rows", body_part: "back" },
+  { id: 15, name: "barbell rows", body_part: "back" },
+  { id: 16, name: "dumbell rows", body_part: "back" },
+  { id: 17, name: "declined push ups", body_part: "chest" },
+  { id: 18, name: "inclined push ups", body_part: "chest" },
 ];
 
-export default exercisesList;
+export const exercisesPlaceholderData = [
+  { id: 1, name: "push ups", body_part: "chest" },
+  { id: 3, name: "rows", body_part: "back" },
+  { id: 17, name: "declined push ups", body_part: "chest" },
+  { id: 10, name: "bicep curls", body_part: "biceps" },
+  { id: 6, name: "squats", body_part: "legs" },
+];
+
+export const setsPlaceholderData = [
+  {
+    exercise_id: 1,
+    set_id: 0,
+    reps: 12,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 1,
+    reps: 12,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 2,
+    reps: 12,
+    weight: 0,
+  },
+  {
+    exercise_id: 3,
+    set_id: 0,
+    reps: 10,
+    weight: 10,
+  },
+  {
+    exercise_id: 3,
+    set_id: 1,
+    reps: 10,
+    weight: 10,
+  },
+  {
+    exercise_id: 3,
+    set_id: 2,
+    reps: 10,
+    weight: 10,
+  },
+  {
+    exercise_id: 6,
+    set_id: 0,
+    reps: 18,
+    weight: 0,
+  },
+  {
+    exercise_id: 10,
+    set_id: 0,
+    reps: 12,
+    weight: 8,
+  },
+  {
+    exercise_id: 10,
+    set_id: 1,
+    reps: 12,
+    weight: 8,
+  },
+  {
+    exercise_id: 10,
+    set_id: 2,
+    reps: 2,
+    weight: 8,
+  },
+  {
+    exercise_id: 17,
+    set_id: 0,
+    reps: 8,
+    weight: 0,
+  },
+  {
+    exercise_id: 17,
+    set_id: 1,
+    reps: 8,
+    weight: 0,
+  },
+  {
+    exercise_id: 17,
+    set_id: 2,
+    reps: 8,
+    weight: 0,
+  },
+  {
+    exercise_id: 17,
+    set_id: 3,
+    reps: 8,
+    weight: 0,
+  },
+];
