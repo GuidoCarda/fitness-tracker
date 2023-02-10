@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Outlet,
   Navigate,
@@ -14,21 +14,15 @@ import useAuth from "../hooks/useAuth";
 //Ui animations
 import { motion } from "framer-motion";
 
-import Unauthorized from "./Unauthorized";
 import { supabase } from "../supabaseClient";
+import authService from "../services/authService";
+import Sidebar from "../components/Sidebar";
 
 const ProtectedRoutes = () => {
   const data = useLoaderData();
-  // const { isAuth, logout, login, user } = useAuth();
-
-  // if (!isAuth && data) {
-  //   login(data);
-  // }
-
-  console.log(`loaderData  ->`, data);
   const location = useLocation();
 
-  // if (!isAuth) return <Unauthorized />;
+  console.log(`loaderData  ->`, data);
 
   if (!data.session)
     return (
@@ -42,28 +36,30 @@ const ProtectedRoutes = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
+      <Sidebar />
+
       <nav className="h-14 flex items-center">
         {" "}
         <span>Logo</span>{" "}
         <NavLink
           className="ml-auto text-neutral-500 hover:text-black"
-          to="/"
+          to="/workouts"
         >
           Home
         </NavLink>{" "}
         <NavLink
-          to="profile"
+          to="dashboard/profile"
           className="ml-4 text-neutral-500 hover:text-black"
         >
           Profile
         </NavLink>{" "}
         <NavLink
-          to="settings"
+          to="dashboard/settings"
           className="ml-4 text-neutral-500 hover:text-black"
         >
           Settings
         </NavLink>{" "}
-        <Form method="post" action="/home">
+        <Form method="post" action="/login">
           <button
             type="submit"
             name="intent"
@@ -108,6 +104,7 @@ export async function action({ request }) {
 }
 
 export async function loader({ params }) {
+  console.log("se ejecuto el loader");
   try {
     const { data, error } = await supabase.auth.getSession();
 
@@ -117,7 +114,7 @@ export async function loader({ params }) {
     // });
     if (error) throw error;
 
-    console.log("data in loader: ", data);
+    // console.log("data in loader: ", data);
     return data;
   } catch (error) {
     console.log(error);
