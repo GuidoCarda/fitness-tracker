@@ -2,6 +2,7 @@ import React from "react";
 
 //Ui animations
 import { motion } from "framer-motion";
+import { supabase } from "../supabaseClient";
 
 const Dashboard = () => {
   return (
@@ -43,3 +44,14 @@ export const Settings = () => {
     </motion.div>
   );
 };
+
+export async function loader() {
+  try {
+    const response = await supabase.auth.getUser();
+    console.log("profile loader");
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+}
