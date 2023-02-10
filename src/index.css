@@ -8,6 +8,38 @@
     background-color: #f0f0f9;
   }
 
+  html::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  html::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: #f0f0f9;
+  }
+
+  html::-webkit-scrollbar-thumb {
+    background: #8e939f;
+    border-radius: 100vh;
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background: #c0a0b9;
+  }
+
+  /* Remove arrows from inputs type number */
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
   /* overwrite default browser autocomplete styles */
   input:-webkit-autofill,
   input:-webkit-autofill:hover,

@@ -24,6 +24,105 @@ import { BiEdit } from "react-icons/bi";
 import WorkoutListExercise from "../components/WorkoutListExercise";
 import { exercises } from "../exercices";
 
+const dummyData = [
+  {
+    exercise_id: 1,
+    set_id: 0,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 1,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 2,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 3,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 4,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 5,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 6,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 7,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 8,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 9,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 10,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 11,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 12,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 13,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 14,
+    reps: 0,
+    weight: 0,
+  },
+  {
+    exercise_id: 1,
+    set_id: 15,
+    reps: 0,
+    weight: 0,
+  },
+];
+
 const Workout = () => {
   const workoutData = useLoaderData();
 
@@ -41,9 +140,18 @@ const Workout = () => {
 
   console.log("isSaving: " + isSaving);
 
-  const [workout, setWorkout] = useState([]);
-  const [sets, setSets] = useState([]);
+  const [workout, setWorkout] = useState([
+    {
+      id: 1,
+      name: "push ups",
+      body_part: "chest",
+    },
+  ]);
+  const [sets, setSets] = useState(dummyData);
   const [isOpen, setIsOpen] = useState(false);
+
+  console.log(sets);
+  console.log(workout);
 
   useEffect(() => {
     if (data2.length === 0) return;
@@ -189,47 +297,63 @@ const Workout = () => {
       exit={{ opacity: 0 }}
     >
       <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-bold">Workout</h1>
-        <Link to="/" className="bg-neutral-300 px-4 py-2 rounded-md">
-          Home
-        </Link>
-      </div>
+        <div>
+          <h1 className="text-4xl font-semibold">Entrenamiento</h1>
 
-      <section className="mt-10">
-        {loaderData ? (
-          <div>
-            <h2 className="text-2xl font-bold">
-              Workout name: {loaderData.name}
-            </h2>
-            <p className="mt-2">{loaderData.created_at}</p>
-          </div>
-        ) : null}
-      </section>
+          <span className="text-sm text-[#8E93A0] ">
+            Creado el 12/02/23
+          </span>
+        </div>
 
-      <section className="mt-10 ">
-        <div className="flex items-center mb-4">
-          <h2 className="text-2xl font-bold">Exercises</h2>
+        <div className="flex gap-2 ml-auto">
+          {data2.length === 0 && workout.length !== 0 && (
+            <>
+              <fetcher.Form>
+                <button
+                  type="button"
+                  name="intent"
+                  onClick={handleWorkoutSave}
+                  value="save-workout"
+                  disabled={isSaving}
+                  className="bg-[#18B984] text-white px-4 py-2 rounded-lg disabled:bg-emerald-400"
+                >
+                  {isSaving ? "Guardando" : "Guardar Entrenamiento"}
+                </button>
+              </fetcher.Form>
+            </>
+          )}
 
-          {/* Action buttons - Add Exercise. Save, delete & edit workout */}
-          <div className="flex gap-2 ml-auto">
-            {data2.length === 0 && workout.length !== 0 && (
-              <>
-                <fetcher.Form>
-                  <button
-                    type="button"
-                    name="intent"
-                    onClick={handleWorkoutSave}
-                    value="save-workout"
-                    disabled={isSaving}
-                    className="bg-emerald-600 text-white px-4 py-2 rounded-lg disabled:bg-emerald-400"
-                  >
-                    {isSaving ? "Guardando" : "Guardar Entrenamiento"}
-                  </button>
-                </fetcher.Form>
-              </>
-            )}
+          {data2.length !== 0 && (
+            <fetcher.Form
+              method="post"
+              action={`/workouts/${loaderData.id}`}
+            >
+              <input
+                type="text"
+                value={loaderData.id}
+                name="workout_id"
+                hidden
+                readOnly
+              />
+              <button
+                type="submit"
+                name="intent"
+                value="delete-workout"
+                className="bg-red-600 text-sm sm:text-base text-white p-2 flex items-center justify-center gap-2 md:px-4 md:py-2 rounded-lg"
+              >
+                <FaRegTrashAlt className="w-4 h-4" />
+                <span className="hidden md:block">
+                  {fetcher.state === "submiting" ||
+                  fetcher.state === "loading"
+                    ? "Eliminando..."
+                    : "Eliminar"}
+                </span>
+              </button>
+            </fetcher.Form>
+          )}
 
-            {data2.length !== 0 && (
+          {data2.length !== 0 && workout.length !== 0 && (
+            <>
               <fetcher.Form
                 method="post"
                 action={`/workouts/${loaderData.id}`}
@@ -237,69 +361,40 @@ const Workout = () => {
                 <input
                   type="text"
                   value={loaderData.id}
-                  name="workout_id"
-                  hidden
                   readOnly
+                  hidden
+                  name="workout_id"
                 />
                 <button
                   type="submit"
                   name="intent"
-                  value="delete-workout"
-                  className="bg-red-600 text-sm sm:text-base text-white p-2 flex items-center justify-center gap-2 md:px-4 md:py-2 rounded-lg"
+                  value="edit-workout"
+                  className="bg-blue-600 text-white text-sm sm:text-base p-2 flex items-center justify-center gap-2 md:px-4 md:py-2 rounded-lg"
                 >
-                  <FaRegTrashAlt className="w-4 h-4" />
+                  <BiEdit className="w-4 h-4" />
                   <span className="hidden md:block">
-                    {fetcher.state === "submiting" ||
+                    {fetcher.state === "submitting" ||
                     fetcher.state === "loading"
-                      ? "Eliminando..."
-                      : "Eliminar"}
+                      ? "Editando..."
+                      : "Editar"}{" "}
                   </span>
                 </button>
               </fetcher.Form>
-            )}
-
-            {data2.length !== 0 && workout.length !== 0 && (
-              <>
-                <fetcher.Form
-                  method="post"
-                  action={`/workouts/${loaderData.id}`}
-                >
-                  <input
-                    type="text"
-                    value={loaderData.id}
-                    readOnly
-                    hidden
-                    name="workout_id"
-                  />
-                  <button
-                    type="submit"
-                    name="intent"
-                    value="edit-workout"
-                    className="bg-blue-600 text-white text-sm sm:text-base p-2 flex items-center justify-center gap-2 md:px-4 md:py-2 rounded-lg"
-                  >
-                    <BiEdit className="w-4 h-4" />
-                    <span className="hidden md:block">
-                      {fetcher.state === "submitting" ||
-                      fetcher.state === "loading"
-                        ? "Editando..."
-                        : "Editar"}{" "}
-                    </span>
-                  </button>
-                </fetcher.Form>
-              </>
-            )}
-          </div>
-
-          {data2.length === 0 && !isSaving ? (
-            <button
-              className="bg-emerald-600 text-white ml-2 px-4 py-2 rounded-lg"
-              onClick={() => setIsOpen((prev) => !prev)}
-            >
-              Agregar ejercicio
-            </button>
-          ) : null}
+            </>
+          )}
         </div>
 
+        {data2.length === 0 && !isSaving ? (
+          <button
+            className="bg-[#18B984] text-white ml-2 px-4 py-2 rounded-lg"
+            onClick={() => setIsOpen((prev) => !prev)}
+          >
+            Agregar ejercicio
+          </button>
+        ) : null}
+      </div>
+
+      <section className="mt-10 ">
         {isOpen && (
           <SearchExerciseInput
             addExercise={addExercise}
@@ -307,24 +402,26 @@ const Workout = () => {
           />
         )}
 
-        <ul className="flex flex-col gap-2 mt-6">
-          {workout.length !== 0
-            ? workout.map((ex) => (
-                <li key={ex.id}>
-                  <WorkoutListExercise
-                    exerciseName={ex.name}
-                    addSet={addSet}
-                    handleSetChange={handleSetChange}
-                    deleteExercise={deleteExercise}
-                    deleteSet={deleteSet}
-                    sets={sets.filter(
-                      (setEx) => setEx.exercise_id === ex.id
-                    )}
-                    canEdit={data2.length === 0 && !isSaving}
-                  />
-                </li>
-              ))
-            : null}
+        <ul className="flex flex-col gap-8 mt-6">
+          {workout.length !== 0 ? (
+            workout.map((ex) => (
+              <li key={ex.id}>
+                <WorkoutListExercise
+                  exerciseName={ex.name}
+                  addSet={addSet}
+                  handleSetChange={handleSetChange}
+                  deleteExercise={deleteExercise}
+                  deleteSet={deleteSet}
+                  sets={sets.filter(
+                    (setEx) => setEx.exercise_id === ex.id
+                  )}
+                  canEdit={data2.length === 0 && !isSaving}
+                />
+              </li>
+            ))
+          ) : (
+            <li> Aun no hay ningun ejercicio! </li>
+          )}
         </ul>
       </section>
     </motion.div>

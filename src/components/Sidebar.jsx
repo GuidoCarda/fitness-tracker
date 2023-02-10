@@ -1,11 +1,11 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 
-const sideBarLinks = ["home", "entrenamientos", "perfil", "settings"];
+const sideBarLinks = ["home", "workouts", "perfil", "settings"];
 
 const Sidebar = () => {
   return (
-    <aside className="bg-white min-h-full p-4 w-64 ">
+    <aside className="bg-white min-h-full p-4 w-full hidden md:block flex-shrink-0  md:w-64 ">
       <span className="block font-bold text-2xl my-10">
         Fitness Tracker
       </span>
@@ -13,7 +13,7 @@ const Sidebar = () => {
         {sideBarLinks.map((link) => (
           <li>
             <NavLink
-              to={`/workouts/dashboard/${link}`}
+              to={`/${link}`}
               className={({ isActive }) =>
                 `${
                   isActive ? "bg-[#18B984] text-white" : ""

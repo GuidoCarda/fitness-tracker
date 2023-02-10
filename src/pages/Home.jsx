@@ -82,13 +82,16 @@ const Home = () => {
             loaderData.map((workout, idx) => (
               <li
                 key={idx}
-                className="bg-white h-24  rounded-lg flex items-center justify-between"
+                className="bg-white h-24  rounded-lg flex items-center justify-between hover:shadow-md hover:shadow-[#E2E2F3]"
               >
                 <Link
-                  className=" h-full w-full p-4 flex items-center"
+                  className=" h-full w-full p-4 flex justify-center flex-col "
                   to={`${workout?.id}`}
                 >
                   {workout.name}
+                  <span className="text-sm text-[#8E939F]">
+                    12/02/23
+                  </span>
                 </Link>
               </li>
             ))

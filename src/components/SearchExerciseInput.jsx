@@ -39,7 +39,7 @@ const SearchExerciseInput = ({ addExercise, setIsOpen }) => {
   // console.log(queryResults);
 
   return (
-    <div className=" bg-neutral-100 rounded-md mt-10 px-6 py-8 ">
+    <div className=" bg-white rounded-md mt-10 px-6 py-8 ">
       <h2 className="text-2xl font-semibold mb-4">Nuevo ejercicio</h2>
 
       <div className=" relative flex flex-col ">
