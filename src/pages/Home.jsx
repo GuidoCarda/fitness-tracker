@@ -27,8 +27,8 @@ const Home = () => {
   const fetcher = useFetcher();
   const navigation = useNavigation();
 
-  console.log("Navigation state -> " + navigation.state);
-  console.log("Fetcher state -> " + fetcher.state);
+  // console.log("Navigation state -> " + navigation.state);
+  // console.log("Fetcher state -> " + fetcher.state);
 
   return (
     <motion.div
@@ -47,9 +47,6 @@ const Home = () => {
         >
           Nuevo Entrenamiento
         </button>
-        <Link className="test-neutral-500" to="/dashboard">
-          Dashboard
-        </Link>
       </div>
 
       <AnimatePresence>
@@ -88,7 +85,7 @@ const Home = () => {
               >
                 <Link
                   className=" h-full w-full p-4 flex items-center"
-                  to={`/workouts/${workout?.id}`}
+                  to={`${workout?.id}`}
                 >
                   {workout.name}
                 </Link>

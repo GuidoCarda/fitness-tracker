@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 //Icons
 import { BiLeftArrowAlt } from "react-icons/bi";
 import { supabase } from "../supabaseClient";
+import authService from "../services/authService";
 
 const LogIn = () => {
   const { login } = useAuth();
@@ -126,15 +127,13 @@ const LogIn = () => {
 export default LogIn;
 
 export async function action({ request }) {
-  console.log("entro");
   const { intent, ...formValues } = Object.fromEntries(
     await request.formData()
   );
 
-  console.log(formValues);
-  console.log(intent);
-
   if (intent === "signup") {
+    const data = await authService.signUp();
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email: "test@email.com",
@@ -142,9 +141,6 @@ export async function action({ request }) {
       });
 
       if (error) throw error;
-
-      // return redirect("/dashboard");
-      console.log(data);
 
       return data;
     } catch (error) {
@@ -161,10 +157,22 @@ export async function action({ request }) {
 
       if (error) throw error;
 
-      // return redirect("/dashboard");
-      console.log(data);
+      return redirect("/workouts");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-      return redirect("/home");
+  if (intent === "logout") {
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) throw error;
+
+      // return redirect("/dashboard");
+      console.log("logged out...");
+
+      return redirect("/");
     } catch (error) {
       console.log(error);
     }

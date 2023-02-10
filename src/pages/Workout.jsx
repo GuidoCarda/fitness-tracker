@@ -387,7 +387,7 @@ export async function action({ request }) {
 
       if (error) throw error;
 
-      return redirect("/");
+      return redirect("/workouts");
     } catch (error) {
       console.log(error);
     }
