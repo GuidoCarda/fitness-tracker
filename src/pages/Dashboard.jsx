@@ -3,6 +3,7 @@ import React from "react";
 //Ui animations
 import { motion } from "framer-motion";
 import { supabase } from "../supabaseClient";
+import Sidebar from "../components/Sidebar";
 
 const Dashboard = () => {
   return (

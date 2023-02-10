@@ -64,12 +64,13 @@ function App() {
           />
           <Route path="delete" action={deleteWorkouts} />
           <Route path="dashboard">
-            <Route index element={<Dashboard />} />
+            <Route path="entrenamientos" element={<Dashboard />} />
             <Route
-              path="profile"
+              path="home"
               element={<Profile />}
               loader={profileLoader}
             />
+            <Route path="perfil" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Route>

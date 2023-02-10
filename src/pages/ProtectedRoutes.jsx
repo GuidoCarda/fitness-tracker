@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 
 import { supabase } from "../supabaseClient";
 import authService from "../services/authService";
+import Sidebar from "../components/Sidebar";
 
 const ProtectedRoutes = () => {
   const data = useLoaderData();
@@ -35,6 +36,8 @@ const ProtectedRoutes = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
+      <Sidebar />
+
       <nav className="h-14 flex items-center">
         {" "}
         <span>Logo</span>{" "}

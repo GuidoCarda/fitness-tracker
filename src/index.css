@@ -5,6 +5,7 @@
 @layer base {
   html {
     font-family: "Poppins", sans-serif;
+    background-color: black;
   }
 
   /* overwrite default browser autocomplete styles */
