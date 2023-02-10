@@ -39,7 +39,9 @@ const ProtectedRoutes = () => {
     >
       <Sidebar />
 
-      <Outlet />
+      <div className="flex-grow pt-12 p-10 border-2 border-black">
+        <Outlet />
+      </div>
     </motion.div>
   );
 };

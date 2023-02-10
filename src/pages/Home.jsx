@@ -35,7 +35,7 @@ const Home = () => {
       // initial={{ opacity: 0 }}
       // animate={{ opacity: 1 }}
       // exit={{ opacity: 0 }}
-      className={"flex-grow pt-12 p-10 border-2 border-black"}
+      className={""}
     >
       <div className="flex items-center justify-between font">
         <h1 className=" text-2xl md:text-4xl font-bold ">
