@@ -32,9 +32,10 @@ const Home = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      // initial={{ opacity: 0 }}
+      // animate={{ opacity: 1 }}
+      // exit={{ opacity: 0 }}
+      className={"flex-grow pt-12 p-10 border-2 border-black"}
     >
       <div className="flex items-center justify-between font">
         <h1 className=" text-2xl md:text-4xl font-bold ">
@@ -81,7 +82,7 @@ const Home = () => {
             loaderData.map((workout, idx) => (
               <li
                 key={idx}
-                className="border-2 border-neutral-400 h-24  rounded-lg flex items-center justify-between"
+                className="bg-white h-24  rounded-lg flex items-center justify-between"
               >
                 <Link
                   className=" h-full w-full p-4 flex items-center"
@@ -183,8 +184,8 @@ function WorkoutInput() {
     >
       <Form
         method="post"
-        action="/"
-        className="bg-neutral-100 px-6 py-8 flex flex-col mt-6 rounded-md"
+        action="/workouts"
+        className="bg-white px-6 py-8 flex flex-col mt-6 rounded-md"
       >
         <h2 className="text-2xl font-semibold mb-4">
           Nuevo Entrenamiento

@@ -31,45 +31,14 @@ const ProtectedRoutes = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
+      // initial={{ opacity: 0 }}
+      // animate={{ opacity: 1 }}
+      // exit={{ opacity: 0 }}
+      // transition={{ duration: 0.5 }}
+      className="flex min-h-screen"
     >
       <Sidebar />
 
-      <nav className="h-14 flex items-center">
-        {" "}
-        <span>Logo</span>{" "}
-        <NavLink
-          className="ml-auto text-neutral-500 hover:text-black"
-          to="/workouts"
-        >
-          Home
-        </NavLink>{" "}
-        <NavLink
-          to="dashboard/profile"
-          className="ml-4 text-neutral-500 hover:text-black"
-        >
-          Profile
-        </NavLink>{" "}
-        <NavLink
-          to="dashboard/settings"
-          className="ml-4 text-neutral-500 hover:text-black"
-        >
-          Settings
-        </NavLink>{" "}
-        <Form method="post" action="/login">
-          <button
-            type="submit"
-            name="intent"
-            value="logout"
-            className="ml-4 text-neutral-500 hover:text-black"
-          >
-            logout
-          </button>{" "}
-        </Form>
-      </nav>
       <Outlet />
     </motion.div>
   );
@@ -119,4 +88,39 @@ export async function loader({ params }) {
   } catch (error) {
     console.log(error);
   }
+}
+
+{
+  /* <nav className="h-14 flex items-center">
+        {" "}
+        <span>Logo</span>{" "}
+        <NavLink
+          className="ml-auto text-neutral-500 hover:text-black"
+          to="/workouts"
+        >
+          Home
+        </NavLink>{" "}
+        <NavLink
+          to="dashboard/profile"
+          className="ml-4 text-neutral-500 hover:text-black"
+        >
+          Profile
+        </NavLink>{" "}
+        <NavLink
+          to="dashboard/settings"
+          className="ml-4 text-neutral-500 hover:text-black"
+        >
+          Settings
+        </NavLink>{" "}
+        <Form method="post" action="/login">
+          <button
+            type="submit"
+            name="intent"
+            value="logout"
+            className="ml-4 text-neutral-500 hover:text-black"
+          >
+            logout
+          </button>{" "}
+        </Form>
+      </nav>*/
 }

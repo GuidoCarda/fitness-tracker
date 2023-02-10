@@ -51,7 +51,7 @@ function App() {
           loader={authLoader}
         >
           <Route
-            index
+            path="/workouts"
             element={<Home />}
             loader={workoutsLoader}
             action={createWorkout}

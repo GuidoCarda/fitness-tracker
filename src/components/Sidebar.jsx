@@ -5,7 +5,7 @@ const sideBarLinks = ["home", "entrenamientos", "perfil", "settings"];
 
 const Sidebar = () => {
   return (
-    <aside className="absolute top-0 left-0 bottom-0 w-64 bg-white h-full p-4">
+    <aside className="bg-white min-h-full p-4 w-64 ">
       <span className="block font-bold text-2xl my-10">
         Fitness Tracker
       </span>
